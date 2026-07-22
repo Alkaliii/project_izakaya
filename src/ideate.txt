@@ -1,0 +1,28 @@
+Ideas
+
+GMTK 2026
+
+- Beat the timer
+- Limited actions or uses
+- Tracking number of diminishing targets
+- Switch up on timer count down
+- Limited access to critcal information, each access attempt counts down your uses
+- Manage your health! Keep it Low!
+
+-> Player has a health value of 3
+-> Player can use specific attacks depending on health (no attack on full health)
+-> When in range the fairy heals the player to full?
+-> Player can attack fairy to stun them
+-> Enemies have health value of 2 or 3 and deal contact damage?
+-> 2 Enemy types 
+	patrol that dashes towards player when facing
+	flying (fairy esq) that shoots projectiles when in range
+
+Layers:
+	1 : Unassigned
+	2 : Environment
+	3 : Player
+	4 : Enemy
+	5 : Other (Fairy and flying enemies that ignore...?)
+	6 : HitBox (Only Interacts with HurtBox, can be tagged to exclude)
+	7 : HurtBox (Detects HitBox, will exclude boxes with specified tags)
