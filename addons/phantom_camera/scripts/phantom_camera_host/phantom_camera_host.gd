@@ -261,8 +261,9 @@ func _get_configuration_warnings() -> PackedStringArray:
 func _enter_tree() -> void:
 	var parent: Node = get_parent()
 	if parent is Camera2D or parent.is_class("Camera3D"): ## Note: To support disable_3d export templates for 2D projects, this is purposely not strongly typed.
-		_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
-		_phantom_camera_manager.pcam_host_added(self)
+		if !Engine.is_editor_hint(): 
+			_phantom_camera_manager = get_tree().root.get_node(_constants.PCAM_MANAGER_NODE_NAME)
+			_phantom_camera_manager.pcam_host_added(self)
 
 		_is_child_of_camera = true
 		if parent is Camera2D:
@@ -277,7 +278,7 @@ func _enter_tree() -> void:
 
 		if not is_node_ready():	return
 
-		if _is_2d:
+		if _is_2d and !Engine.is_editor_hint():
 			if not _phantom_camera_manager.get_phantom_camera_2ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_2ds():
 					_pcam_added_to_scene(pcam)
@@ -287,7 +288,7 @@ func _enter_tree() -> void:
 			if not _phantom_camera_manager.draw_limit_2d.is_connected(_draw_limit_2d):
 				_phantom_camera_manager.draw_limit_2d.connect(_draw_limit_2d)
 
-		else:
+		elif !Engine.is_editor_hint():
 			if not _phantom_camera_manager.get_phantom_camera_3ds().is_empty():
 				for pcam in _phantom_camera_manager.get_phantom_camera_3ds():
 					_pcam_added_to_scene(pcam)
@@ -307,7 +308,7 @@ func _ready() -> void:
 	process_physics_priority = 300
 
 	# PCam Host Signals
-	if Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME):
+	if !Engine.is_editor_hint() and Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME):
 		_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
 		_phantom_camera_manager.pcam_host_layer_changed.connect(_pcam_host_layer_changed)
 
@@ -327,7 +328,7 @@ func _ready() -> void:
 				_phantom_camera_manager.limit_2d_changed.connect(_update_limit_2d)
 			if not _phantom_camera_manager.draw_limit_2d.is_connected(_draw_limit_2d):
 				_phantom_camera_manager.draw_limit_2d.connect(_draw_limit_2d)
-	else:
+	elif !Engine.is_editor_hint():
 		printerr("Could not find Phantom Camera Manager singleton")
 		printerr("Make sure the addon is enable or that the singleton hasn't been disabled inside Project Settings / Globals")
 

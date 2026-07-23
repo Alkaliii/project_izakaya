@@ -12,16 +12,18 @@ func _set_commands_and_animations() -> void:
 
 ## Setup function.
 func _on_update() -> void:
-			#parent.play_animation("attack")
-			#parent.playerSprite.offset.x = -8.0 if parent.playerSprite.flip_h else 8.0
+	#if _get_special_flag("attacking"):
+		#if parent.velocity.y > 0.0: 
+			#var block : PackedStringArray = PackedStringArray(["move","moveAnimation","jumpAnimation","jump"])
+			#_set_special_flag("attacking", true, block)
 	pass
 
 ## Animation check function. If you need to change animations do it here mainly.
 func _animation_check() -> void:
 	if _get_special_flag("attacking"):
 		if parent.is_on_floor():
-			parent.play_animation("attack")
-			parent.playerSprite.offset.x = -8.0 if parent.playerSprite.flip_h else 8.0
+			parent.play_attack_animation()
+			#parent.playerSprite.offset.x = -8.0 if parent.playerSprite.flip_h else 8.0
 		else: parent.play_animation("jump_attack")
 
 ## Special gravity function. Apply any needed changes to the gravity here. parent.appliedValues.gravity and parent.appliedValues.terminalVelocity changes go here.
@@ -32,17 +34,18 @@ func _gravity() -> void:
 
 ## Movement check function. The main component of this. Check for inputs with parent.commandInputs.<your_input>.<tap/hold/release>
 func _movement_check() -> void:
-	if parent.commandInputs.attack.tap:
-		var block : PackedStringArray = PackedStringArray(["moveAnimation","jumpAnimation"])
-		if parent.is_on_floor(): 
-			print("blocking")
-			block.append("move")
+	if parent.commandInputs.attack.tap and !parent.is_on_wall() and !_get_special_flag("attacking"):
+		var block : PackedStringArray = PackedStringArray(["moveAnimation","jumpAnimation","jump","move_half"])
+		#if parent.is_on_floor() and parent.velocity.y > 0.0 and !Input.is_action_just_pressed("jump"): 
+			#print("blocking ",parent.is_on_floor()," ",is_zero_approx(parent.velocity.y)," ",parent.velocity.y > 0.0)
+			#block.append("move")
 		_set_special_flag("attacking", true, block)
 		parent.attack.emit(true)
-		await parent.playerSprite.animation_finished
+		if parent.is_on_floor() and parent.velocity.y >= 0.0: await parent.play_attack_animation()
+		else: await parent.playerSprite.animation_finished
 		parent.attack.emit(false)
 		_set_special_flag("attacking", false)
-		parent.playerSprite.offset.x = 0.0
+		#parent.playerSprite.offset.x = 0.0
 	#if _get_special_flag("attacking"):
 		#if parent.velocity.y > 1.0 or parent.velocity.y < 1.0:
 			#_set_special_flag("attacking", true, ["move","moveAnimation", "jumpAnimation"])
@@ -53,8 +56,8 @@ func _movement_check() -> void:
 
 ## Jump override function. If you need a custom jump function it goes here. Return true if you applied changes to override usual jump behavior, return false otherwise.
 func _jump_override() -> bool:
-	if _get_special_flag("attacking"):
-		return true
+	#if _get_special_flag("attacking"):
+		#return true
 	return false
 
 ## Sprite flip check function. Return true if you need the sprite to not flip under certain circumstances.

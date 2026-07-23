@@ -1,0 +1,144 @@
+[gd_scene format=3 uid="uid://b0rgmdl14lg2u"]
+
+[ext_resource type="Script" uid="uid://b7fmu2yoo286n" path="res://src/schema/fairy_controller.gd" id="1_osd1p"]
+[ext_resource type="Shader" uid="uid://c3epg5t7vexup" path="res://assets/shaders/bounce2D.gdshader" id="2_acjdh"]
+[ext_resource type="Texture2D" uid="uid://dcfk1jgcf6iih" path="res://assets/fairy-sprite-sheet-01.png" id="3_tefb0"]
+[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/hurtbox.gd" id="4_6hghg"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rx1b3"]
+shader = ExtResource("2_acjdh")
+shader_parameter/do_abs = false
+shader_parameter/do_quantize = true
+shader_parameter/quantize_to = 1.0
+shader_parameter/sine_amplitude = Vector2(1, 3)
+shader_parameter/sine_speed = Vector2(1, 2.5)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v73kq"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rhuw1"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hwj8r"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(32, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fm7fx"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(48, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_q4bkd"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(64, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_7dnk2"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x14jf"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qd2dh"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(16, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_p0egt"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(32, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_02cch"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(48, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_k2b2f"]
+atlas = ExtResource("3_tefb0")
+region = Rect2(0, 32, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wcd5e"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v73kq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rhuw1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hwj8r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fm7fx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_q4bkd")
+}],
+"loop": 0,
+"name": &"buff",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_7dnk2")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x14jf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qd2dh")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_p0egt")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_02cch")
+}],
+"loop": 1,
+"name": &"fly",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_k2b2f")
+}],
+"loop": 1,
+"name": &"hurt",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_pdl27"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5d40o"]
+size = Vector2(12, 12)
+
+[node name="Fairy" type="CharacterBody2D" unique_id=750345321]
+collision_layer = 16
+script = ExtResource("1_osd1p")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1936919384]
+texture_filter = 1
+material = SubResource("ShaderMaterial_rx1b3")
+sprite_frames = SubResource("SpriteFrames_wcd5e")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=441477669]
+show_behind_parent = true
+shape = SubResource("RectangleShape2D_pdl27")
+
+[node name="FairyDetect" type="Area2D" parent="." unique_id=517501704]
+show_behind_parent = true
+collision_layer = 64
+collision_mask = 32
+script = ExtResource("4_6hghg")
+metadata/_custom_type_script = "uid://bmr2kt3egosib"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FairyDetect" unique_id=66623011]
+shape = SubResource("RectangleShape2D_5d40o")
+debug_color = Color(0, 1, 0, 0.41960785)

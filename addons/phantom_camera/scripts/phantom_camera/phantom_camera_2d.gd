@@ -704,7 +704,9 @@ func _validate_property(property: Dictionary) -> void:
 
 
 func _enter_tree() -> void:
+	if Engine.is_editor_hint(): return
 	_phantom_camera_manager = Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME)
+	#if !_phantom_camera_manager: return
 	_tween_skip = !tween_on_load
 
 	_phantom_camera_manager.pcam_added(self)
@@ -741,7 +743,7 @@ func _exit_tree() -> void:
 func _ready() -> void:
 	_transform_output = global_transform
 
-	_phantom_camera_manager.noise_2d_emitted.connect(_noise_emitted)
+	if !Engine.is_editor_hint(): _phantom_camera_manager.noise_2d_emitted.connect(_noise_emitted)
 
 	if not Engine.is_editor_hint():
 		_preview_noise = true
@@ -1080,6 +1082,7 @@ func _draw() -> void:
 
 
 func _camera_frame_rect() -> Rect2:
+	if !_phantom_camera_manager: return Rect2()
 	var screen_size_zoom: Vector2 = Vector2(_phantom_camera_manager.screen_size.x / get_zoom().x, _phantom_camera_manager.screen_size.y / get_zoom().y)
 
 	return Rect2(-screen_size_zoom / 2, screen_size_zoom)
@@ -1358,6 +1361,7 @@ func get_zoom() -> Vector2:
 ## Assigns new [member priority] value.
 func set_priority(value: int) -> void:
 	priority = maxi(0, value)
+	if Engine.is_editor_hint(): return
 	if not is_node_ready(): return
 	if not Engine.has_singleton(_constants.PCAM_MANAGER_NODE_NAME): return
 	Engine.get_singleton(_constants.PCAM_MANAGER_NODE_NAME).pcam_priority_changed.emit(self)

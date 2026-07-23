@@ -11,6 +11,7 @@ config_version=5
 [application]
 
 config/name="New Game Project"
+run/main_scene="uid://cxntm12tjeroy"
 config/features=PackedStringArray("4.7")
 config/icon="res://icon.svg"
 
@@ -20,10 +21,10 @@ PhantomCameraManager="*uid://duq6jhf6unyis"
 
 [display]
 
-window/size/viewport_width=208
-window/size/viewport_height=117
-window/size/window_width_override=416
-window/size/window_height_override=234
+window/size/viewport_width=192
+window/size/viewport_height=108
+window/size/window_width_override=576
+window/size/window_height_override=324
 window/stretch/mode="viewport"
 window/stretch/aspect="keep_height"
 window/stretch/scale_mode="integer"

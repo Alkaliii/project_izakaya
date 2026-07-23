@@ -1,0 +1,787 @@
+[gd_scene format=3 uid="uid://crxdmhhua4w7g"]
+
+[ext_resource type="Script" uid="uid://r48ickdxd3kr" path="res://addons/PlayerController/PlatformerController2D.gd" id="1_rclot"]
+[ext_resource type="Script" uid="uid://btbriy08jm3mk" path="res://addons/PlayerController/SpecialMovementsPlatformer2D.gd" id="2_hclnh"]
+[ext_resource type="Script" uid="uid://eiygrbdusiyg" path="res://addons/PlayerController/SpecialMovements/Attack.gd" id="3_ndfpv"]
+[ext_resource type="Script" uid="uid://dn1hfn56twvon" path="res://src/schema/player_controller_ex.gd" id="4_dxtnc"]
+[ext_resource type="Script" uid="uid://js72fh7ryekh" path="res://addons/PlayerController/SpecialMovements/WallJump.gd" id="4_hclnh"]
+[ext_resource type="Texture2D" uid="uid://dhvk6o2qotw4h" path="res://assets/small_sprites-01.png" id="5_nic3v"]
+[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/hitbox.gd" id="6_fxwnc"]
+[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/hurtbox.gd" id="7_hc2cd"]
+[ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="8_mlfxl"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="9_nc72e"]
+[ext_resource type="FontFile" uid="uid://jqxdmv3ew4or" path="res://assets/fonts/pixel_operator/PixelOperator8.ttf" id="11_ndfpv"]
+[ext_resource type="Shader" uid="uid://dfu4tdh7rg5o7" path="res://assets/shaders/ProceduralFxA2D.gdshader" id="12_dxtnc"]
+
+[sub_resource type="Resource" id="Resource_bvvr5"]
+script = ExtResource("3_ndfpv")
+metadata/_custom_type_script = "uid://eiygrbdusiyg"
+
+[sub_resource type="Resource" id="Resource_3n7b0"]
+script = ExtResource("4_hclnh")
+inputPauseAfterWallJump = 0.05
+wallKickAngle = 85.0
+wallSliding = 5.0
+metadata/_custom_type_script = "uid://js72fh7ryekh"
+
+[sub_resource type="Curve" id="Curve_fxwnc"]
+_data = [Vector2(0.05, 0), 0.0, 4.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_nic3v"]
+curve = SubResource("Curve_fxwnc")
+
+[sub_resource type="Curve" id="Curve_nic3v"]
+_data = [Vector2(0, 0), 0.0, 3.0, 0, 0, Vector2(0.75, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_dxtnc"]
+curve = SubResource("Curve_nic3v")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_fxwnc"]
+noise_type = 2
+frequency = 0.02
+fractal_type = 0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_nic3v"]
+noise = SubResource("FastNoiseLite_fxwnc")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_dxtnc"]
+shader = ExtResource("12_dxtnc")
+shader_parameter/texture_size = Vector2(1, 1)
+shader_parameter/progress = 0.0
+shader_parameter/derive_progress = 2
+shader_parameter/ease_progress = 4
+shader_parameter/time_scale = 1.0
+shader_parameter/ping_pong = 0
+shader_parameter/shape_morph = Vector2(0, 0)
+shader_parameter/shp_glb_translate = Vector4(0, 0, 0, 0)
+shader_parameter/shp_glb_rotate = Vector2(0, 0)
+shader_parameter/shp_glb_scale = Vector4(1.5, 1.5, 1, 1)
+shader_parameter/shape_energy = Vector2(1, 1)
+shader_parameter/shape_morph_driver = 0
+shader_parameter/shp_glb_trans_driver = 0
+shader_parameter/shp_glb_rot_driver = 0
+shader_parameter/shp_glb_scl_driver = 0
+shader_parameter/shp_energy_driver = 0
+shader_parameter/shapei = 0
+shader_parameter/shape_sizei = Vector2(0.25, 0.25)
+shader_parameter/shape_sizeib = Vector2(0.25, 0.25)
+shader_parameter/shape_sidesi = 4
+shader_parameter/shape_thicki = Vector2(0.1, 0.1)
+shader_parameter/shape_extrai = Vector4(0.1, 0.1, 0.1, 0.1)
+shader_parameter/shape_sri = Vector3(1, 1, 180)
+shader_parameter/shape_szi_driver = 0
+shader_parameter/shape_szib_driver = 0
+shader_parameter/shape_thicki_driver = 0
+shader_parameter/shape_extrai_driver = 0
+shader_parameter/shapef = 0
+shader_parameter/shape_sizef = Vector2(0.25, 0.25)
+shader_parameter/shape_sizefb = Vector2(0.25, 0.25)
+shader_parameter/shape_sidesf = 4
+shader_parameter/shape_thickf = Vector2(0.1, 0.1)
+shader_parameter/shape_extraf = Vector4(0.1, 0.1, 0.1, 0.1)
+shader_parameter/shape_srf = Vector3(1, 1, 0)
+shader_parameter/shape_szf_driver = 0
+shader_parameter/shape_szfb_driver = 0
+shader_parameter/shape_thickf_driver = 0
+shader_parameter/shape_extraf_driver = 0
+shader_parameter/apply_overlap = 2
+shader_parameter/overlap_percent = Vector2(0, 1)
+shader_parameter/overlap_offset = Vector4(-0.5, 0, 0, 0)
+shader_parameter/overlap_feather = Vector2(0, 0)
+shader_parameter/overlap_percent_driver = 8
+shader_parameter/overlap_offset_driver = 5
+shader_parameter/overlap_feather_driver = 0
+shader_parameter/shape_feather = Vector2(0, 0)
+shader_parameter/feather_falloff = 0
+shader_parameter/feather_falloff_control = Vector3(0.5, 0.5, 0.5)
+shader_parameter/shape_feather_driver = 0
+shader_parameter/shape_rounding = Vector2(0, 0)
+shader_parameter/apply_onion = 0
+shader_parameter/shape_onion = Vector2(0, 0)
+shader_parameter/shape_rounding_driver = 0
+shader_parameter/shape_onion_driver = 0
+shader_parameter/wobble_freq_amp = Vector4(0, 0, 0, 0)
+shader_parameter/wobble_rot = Vector2(0, 0)
+shader_parameter/wfa_driver = 0
+shader_parameter/wrot_driver = 0
+shader_parameter/twist_type = 0
+shader_parameter/shape_twist = Vector2(35, 0)
+shader_parameter/distortion_factor_twist = true
+shader_parameter/mask_factor_twist = false
+shader_parameter/shape_twist_driver = 0
+shader_parameter/shp_scale_anim = 0
+shader_parameter/shp_scale_anim_driver = 2
+shader_parameter/apply_distortion = 1
+shader_parameter/distort_texture = SubResource("NoiseTexture2D_nic3v")
+shader_parameter/distort_str = Vector2(0.3, 0.3)
+shader_parameter/scroll_distortion = Vector4(0, 0, 0, 0)
+shader_parameter/scale_distortion = Vector4(1, 1, 1, 1)
+shader_parameter/polarize_distortion = Vector4(0.5, 0.5, 0.6, 0)
+shader_parameter/distort_str_driver = 0
+shader_parameter/distort_scroll_driver = 0
+shader_parameter/floor_distort_scroll = 0.0
+shader_parameter/distort_scale_driver = 0
+shader_parameter/apply_dist_mask = 0
+shader_parameter/dist_mask_power = 2.0
+shader_parameter/distmask_edge = Vector2(0, 1)
+shader_parameter/fisheye_str = Vector2(0, 0)
+shader_parameter/fisheye_offset = Vector4(0, 0, 0, 0)
+shader_parameter/fisheye_str_driver = 0
+shader_parameter/fisheye_offset_driver = 0
+shader_parameter/use_simple_mask = 0
+shader_parameter/simple_mask_power = 2.0
+shader_parameter/simplem_edge = Vector2(0, 1)
+shader_parameter/simple_only_alpha = true
+shader_parameter/mask_factor_distortion = false
+shader_parameter/tweak_alpha = 1.0
+shader_parameter/apply_rainbow = 0
+shader_parameter/rainbow_str = 1.0
+shader_parameter/r_time_scale = 1.0
+shader_parameter/r_sin_frequency = 0.5
+shader_parameter/r_sin_offset = 0.0
+shader_parameter/r_light_offset = 0.5
+shader_parameter/rainbow_bias = 0
+shader_parameter/rbias_edge = Vector2(0, 1)
+shader_parameter/rescale_vertex = Vector2(1, 1)
+shader_parameter/mesh_offset = Vector2(0, 0)
+shader_parameter/final_mesh_offset = Vector2(-10, 0)
+shader_parameter/mesh_offset_driver = 7
+shader_parameter/index_rand_mesh_rot = 0.0
+shader_parameter/maintain_irm_domain = false
+shader_parameter/mesh_rotation = 0.0
+shader_parameter/animate_mesh_rotation = 0.0
+shader_parameter/animate_mesh_rot_with = 0
+shader_parameter/cull_backface = false
+shader_parameter/fov = 60.0000028025
+shader_parameter/rot_y_deg = 0.0
+shader_parameter/rot_x_deg = 60.00001995000002
+shader_parameter/inset = 0.0
+shader_parameter/custom_a = SubResource("CurveTexture_nic3v")
+shader_parameter/custom_b = SubResource("CurveTexture_dxtnc")
+shader_parameter/randomness = 0
+shader_parameter/randomness_seed = 0
+shader_parameter/index_shift_randomness = 0
+shader_parameter/custom_index = 0
+
+[sub_resource type="Gradient" id="Gradient_dxtnc"]
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_2dr56"]
+gradient = SubResource("Gradient_dxtnc")
+width = 22
+height = 22
+
+[sub_resource type="Curve" id="Curve_dxtnc"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.7018072, 1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_nic3v"]
+offsets = PackedFloat32Array(0.7614379, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l06g0"]
+shader = ExtResource("12_dxtnc")
+shader_parameter/texture_size = Vector2(1, 1)
+shader_parameter/progress = 0.0
+shader_parameter/derive_progress = 2
+shader_parameter/ease_progress = 4
+shader_parameter/time_scale = 1.0
+shader_parameter/ping_pong = 0
+shader_parameter/shape_morph = Vector2(0, 0)
+shader_parameter/shp_glb_translate = Vector4(0, 0, 0, 0)
+shader_parameter/shp_glb_rotate = Vector2(0, 0)
+shader_parameter/shp_glb_scale = Vector4(1.5, 1.5, 1, 1)
+shader_parameter/shape_energy = Vector2(1, 1)
+shader_parameter/shape_morph_driver = 0
+shader_parameter/shp_glb_trans_driver = 0
+shader_parameter/shp_glb_rot_driver = 0
+shader_parameter/shp_glb_scl_driver = 0
+shader_parameter/shp_energy_driver = 0
+shader_parameter/shapei = 0
+shader_parameter/shape_sizei = Vector2(0.25, 0.25)
+shader_parameter/shape_sizeib = Vector2(0.25, 0.25)
+shader_parameter/shape_sidesi = 4
+shader_parameter/shape_thicki = Vector2(0.1, 0.1)
+shader_parameter/shape_extrai = Vector4(0.1, 0.1, 0.1, 0.1)
+shader_parameter/shape_sri = Vector3(1, 1, 90)
+shader_parameter/shape_szi_driver = 0
+shader_parameter/shape_szib_driver = 0
+shader_parameter/shape_thicki_driver = 0
+shader_parameter/shape_extrai_driver = 0
+shader_parameter/shapef = 0
+shader_parameter/shape_sizef = Vector2(0.25, 0.25)
+shader_parameter/shape_sizefb = Vector2(0.25, 0.25)
+shader_parameter/shape_sidesf = 4
+shader_parameter/shape_thickf = Vector2(0.1, 0.1)
+shader_parameter/shape_extraf = Vector4(0.1, 0.1, 0.1, 0.1)
+shader_parameter/shape_srf = Vector3(1, 1, 0)
+shader_parameter/shape_szf_driver = 0
+shader_parameter/shape_szfb_driver = 0
+shader_parameter/shape_thickf_driver = 0
+shader_parameter/shape_extraf_driver = 0
+shader_parameter/apply_overlap = 2
+shader_parameter/overlap_percent = Vector2(0, 1)
+shader_parameter/overlap_offset = Vector4(0.5, 0, 0, 0)
+shader_parameter/overlap_feather = Vector2(0, 0)
+shader_parameter/overlap_percent_driver = 8
+shader_parameter/overlap_offset_driver = 5
+shader_parameter/overlap_feather_driver = 0
+shader_parameter/shape_feather = Vector2(0, 0)
+shader_parameter/feather_falloff = 0
+shader_parameter/feather_falloff_control = Vector3(0.5, 0.5, 0.5)
+shader_parameter/shape_feather_driver = 0
+shader_parameter/shape_rounding = Vector2(0, 0)
+shader_parameter/apply_onion = 0
+shader_parameter/shape_onion = Vector2(0, 0)
+shader_parameter/shape_rounding_driver = 0
+shader_parameter/shape_onion_driver = 0
+shader_parameter/wobble_freq_amp = Vector4(0, 0, 0, 0)
+shader_parameter/wobble_rot = Vector2(0, 0)
+shader_parameter/wfa_driver = 0
+shader_parameter/wrot_driver = 0
+shader_parameter/twist_type = 0
+shader_parameter/shape_twist = Vector2(35, 0)
+shader_parameter/distortion_factor_twist = true
+shader_parameter/mask_factor_twist = false
+shader_parameter/shape_twist_driver = 0
+shader_parameter/shp_scale_anim = 0
+shader_parameter/shp_scale_anim_driver = 2
+shader_parameter/apply_distortion = 1
+shader_parameter/distort_texture = SubResource("NoiseTexture2D_nic3v")
+shader_parameter/distort_str = Vector2(0.3, 0.3)
+shader_parameter/scroll_distortion = Vector4(0, 0, 0, 0)
+shader_parameter/scale_distortion = Vector4(1, 1, 1, 1)
+shader_parameter/polarize_distortion = Vector4(0.5, 0.5, 0.6, 0)
+shader_parameter/distort_str_driver = 0
+shader_parameter/distort_scroll_driver = 0
+shader_parameter/floor_distort_scroll = 0.0
+shader_parameter/distort_scale_driver = 0
+shader_parameter/apply_dist_mask = 0
+shader_parameter/dist_mask_power = 2.0
+shader_parameter/distmask_edge = Vector2(0, 1)
+shader_parameter/fisheye_str = Vector2(0, 0)
+shader_parameter/fisheye_offset = Vector4(0, 0, 0, 0)
+shader_parameter/fisheye_str_driver = 0
+shader_parameter/fisheye_offset_driver = 0
+shader_parameter/use_simple_mask = 0
+shader_parameter/simple_mask_power = 2.0
+shader_parameter/simplem_edge = Vector2(0, 1)
+shader_parameter/simple_only_alpha = true
+shader_parameter/mask_factor_distortion = false
+shader_parameter/tweak_alpha = 1.0
+shader_parameter/apply_rainbow = 0
+shader_parameter/rainbow_str = 1.0
+shader_parameter/r_time_scale = 1.0
+shader_parameter/r_sin_frequency = 0.5
+shader_parameter/r_sin_offset = 0.0
+shader_parameter/r_light_offset = 0.5
+shader_parameter/rainbow_bias = 0
+shader_parameter/rbias_edge = Vector2(0, 1)
+shader_parameter/rescale_vertex = Vector2(1, 1)
+shader_parameter/mesh_offset = Vector2(0, 0)
+shader_parameter/final_mesh_offset = Vector2(10, 0)
+shader_parameter/mesh_offset_driver = 7
+shader_parameter/index_rand_mesh_rot = 0.0
+shader_parameter/maintain_irm_domain = false
+shader_parameter/mesh_rotation = 0.0
+shader_parameter/animate_mesh_rotation = 0.0
+shader_parameter/animate_mesh_rot_with = 0
+shader_parameter/cull_backface = false
+shader_parameter/fov = 60.0000028025
+shader_parameter/rot_y_deg = 0.0
+shader_parameter/rot_x_deg = 60.00001995000002
+shader_parameter/inset = 0.0
+shader_parameter/custom_a = SubResource("CurveTexture_nic3v")
+shader_parameter/custom_b = SubResource("CurveTexture_dxtnc")
+shader_parameter/randomness = 0
+shader_parameter/randomness_seed = 0
+shader_parameter/index_shift_randomness = 0
+shader_parameter/custom_index = 0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2dr56"]
+size = Vector2(16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dxtnc"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nic3v"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fxwnc"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(32, 80, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hc2cd"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_mlfxl"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 96, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nc72e"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(32, 96, 32, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qntp5"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 112, 29, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8wfru"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(29, 112, 29, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_aofjl"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(65, 112, 29, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_euala"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(96, 112, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_omksg"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e5m36"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3n7b0"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lru8j"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(32, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hqd1p"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(48, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rx1b3"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(64, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_muppb"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(80, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ejudc"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5d40o"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kd2ni"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(32, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bdcg6"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(48, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_47fth"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(64, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4jusf"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(80, 16, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6xosr"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2kxqo"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a0vr8"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(32, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hj5eh"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(11, 144, 23, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a2p3r"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_br2pr"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cqfht"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(32, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rqba1"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(48, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_63l5p"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(64, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ywbeg"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(80, 48, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l06g0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dxtnc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nic3v")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fxwnc")
+}],
+"loop": 0,
+"name": &"attack",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hc2cd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_mlfxl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nc72e")
+}],
+"loop": 0,
+"name": &"attack_b",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qntp5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8wfru")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_aofjl")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_euala")
+}],
+"loop": 0,
+"name": &"attack_c",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_omksg")
+}],
+"loop": 1,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e5m36")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3n7b0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lru8j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hqd1p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rx1b3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_muppb")
+}],
+"loop": 1,
+"name": &"falling",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ejudc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5d40o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kd2ni")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bdcg6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_47fth")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4jusf")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6xosr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2kxqo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a0vr8")
+}],
+"loop": 0,
+"name": &"jump",
+"speed": 15.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hj5eh")
+}],
+"loop": 1,
+"name": &"jump_attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a2p3r")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_br2pr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cqfht")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rqba1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_63l5p")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ywbeg")
+}],
+"loop": 1,
+"name": &"walk",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wcd5e"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_muppb"]
+size = Vector2(8, 8)
+
+[sub_resource type="Resource" id="Resource_4jusf"]
+script = ExtResource("9_nc72e")
+transition = 10
+ease = 1
+
+[node name="Player" type="CharacterBody2D" unique_id=1451421413 node_paths=PackedStringArray("playerSprite", "playerCollider")]
+collision_layer = 4
+collision_mask = 10
+script = ExtResource("1_rclot")
+playerSprite = NodePath("PlayerSprite")
+playerCollider = NodePath("PlayerCollider")
+inputKeys = {
+"attack": "attack",
+"down": "move_down",
+"jump": "jump",
+"left": "move_left",
+"right": "move_right",
+"run": null,
+"up": "move_up"
+}
+animations = {
+"attack": "attack",
+"falling": "falling",
+"idle": "idle",
+"jump": "jump",
+"jump_attack": "jump_attack",
+"run": "walk",
+"slide": "falling",
+"walk": "walk"
+}
+maxSpeed = 100.0
+directionalSnap = true
+jumpHeight = 15.0
+descendingGravityFactor = 1.1
+specialMovements = Array[ExtResource("2_hclnh")]([SubResource("Resource_bvvr5"), SubResource("Resource_3n7b0")])
+inputleft = "move_left"
+inputright = "move_right"
+inputup = "move_up"
+inputdown = "move_down"
+inputjump = "jump"
+inputrun = null
+inputattack = "attack"
+animationCustomFlip = false
+animationidle = "idle"
+animationwalk = "walk"
+animationjump = "jump"
+animationrun = "walk"
+animationfalling = "falling"
+animationattack = "attack"
+animationjump_attack = "jump_attack"
+animationslide = "falling"
+metadata/_custom_type_script = "uid://r48ickdxd3kr"
+
+[node name="PlayerControllerEx" type="Node" parent="." unique_id=1004097929 node_paths=PackedStringArray("player_controller", "camera", "attack_box", "detect_box", "airburst_parent", "airburst_left", "airburst_right", "debug_speed", "debug_anim")]
+script = ExtResource("4_dxtnc")
+player_controller = NodePath("..")
+camera = NodePath("../CameraParent/PhantomCamera2D")
+attack_box = NodePath("../PlayerAttack")
+detect_box = NodePath("../PlayerDetect")
+airburst_parent = NodePath("../DustParticles")
+airburst_left = NodePath("../DustParticles/AirBurstLeft")
+airburst_right = NodePath("../DustParticles/AirBurstRight")
+debug_speed = NodePath("../CanvasLayer/debug/VBoxContainer/speed")
+debug_anim = NodePath("../CanvasLayer/debug/VBoxContainer/anim")
+
+[node name="DustParticles" type="Node2D" parent="." unique_id=1788047763]
+position = Vector2(0, 14)
+
+[node name="AirBurstLeft" type="CPUParticles2D" parent="DustParticles" unique_id=2129818450]
+material = SubResource("ShaderMaterial_dxtnc")
+emitting = false
+amount = 1
+texture = SubResource("GradientTexture2D_2dr56")
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.9
+use_fixed_seed = true
+seed = 4051385186
+fixed_fps = 30
+emission_shape = 3
+emission_rect_extents = Vector2(1, 3)
+direction = Vector2(-1, 0)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 2.0
+scale_amount_min = 0.8
+scale_amount_curve = SubResource("Curve_dxtnc")
+color_ramp = SubResource("Gradient_nic3v")
+
+[node name="AirBurstRight" type="CPUParticles2D" parent="DustParticles" unique_id=224197013]
+material = SubResource("ShaderMaterial_l06g0")
+emitting = false
+amount = 1
+texture = SubResource("GradientTexture2D_2dr56")
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.9
+use_fixed_seed = true
+seed = 4051385186
+fixed_fps = 30
+emission_shape = 3
+emission_rect_extents = Vector2(1, 3)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 2.0
+initial_velocity_max = 2.0
+scale_amount_min = 0.8
+scale_amount_curve = SubResource("Curve_dxtnc")
+color_ramp = SubResource("Gradient_nic3v")
+
+[node name="PlayerCollider" type="CollisionShape2D" parent="." unique_id=1482488137]
+shape = SubResource("RectangleShape2D_2dr56")
+
+[node name="PlayerSprite" type="AnimatedSprite2D" parent="." unique_id=1586342138]
+texture_filter = 1
+texture_repeat = 1
+position = Vector2(0, 4)
+sprite_frames = SubResource("SpriteFrames_l06g0")
+animation = &"attack_b"
+centered = false
+offset = Vector2(-8, -8)
+
+[node name="PlayerAttack" type="Area2D" parent="." unique_id=146102195]
+show_behind_parent = true
+position = Vector2(16, 0)
+collision_layer = 32
+collision_mask = 64
+script = ExtResource("6_fxwnc")
+box_tag = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerAttack" unique_id=988161027]
+shape = SubResource("RectangleShape2D_wcd5e")
+disabled = true
+debug_color = Color(1, 0, 0, 0.41960785)
+
+[node name="PlayerDetect" type="Area2D" parent="." unique_id=1603731815]
+collision_layer = 64
+collision_mask = 32
+script = ExtResource("7_hc2cd")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerDetect" unique_id=819416457]
+shape = SubResource("RectangleShape2D_muppb")
+debug_color = Color(0, 1, 0, 0.41960785)
+
+[node name="CameraParent" type="Node2D" parent="." unique_id=906450246]
+
+[node name="PhantomCamera2D" type="Node2D" parent="CameraParent" unique_id=1079996316 node_paths=PackedStringArray("follow_target")]
+top_level = true
+script = ExtResource("8_mlfxl")
+follow_mode = 5
+follow_target = NodePath("..")
+snap_to_pixel = true
+frame_preview = false
+tween_resource = SubResource("Resource_4jusf")
+follow_offset = Vector2(0, -16)
+follow_damping = true
+lookahead = true
+lookahead_time = Vector2(0.5, 0)
+dead_zone_width = 0.125
+dead_zone_height = 0.5
+draw_limits = true
+metadata/_custom_type_script = "uid://bhexx6mj1xv3q"
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1071017687]
+
+[node name="debug" type="Control" parent="CanvasLayer" unique_id=1134714803]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/debug" unique_id=111782464]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="speed" type="RichTextLabel" parent="CanvasLayer/debug/VBoxContainer" unique_id=1009690074]
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("11_ndfpv")
+theme_override_font_sizes/normal_font_size = 8
+text = "Speed"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="anim" type="RichTextLabel" parent="CanvasLayer/debug/VBoxContainer" unique_id=90463801]
+layout_mode = 2
+theme_override_fonts/normal_font = ExtResource("11_ndfpv")
+theme_override_font_sizes/normal_font_size = 8
+text = "anim"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0

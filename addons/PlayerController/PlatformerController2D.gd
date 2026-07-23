@@ -209,6 +209,7 @@ func _ready() -> void:
 		return
 	_setup_keys()
 	_updateData()
+	playerSprite.animation_changed.connect(fix_frame)
 	#if debugMenuEditor:
 		#_debug_variables()
 
@@ -228,12 +229,22 @@ func _updateData() -> void:
 		if movement:
 			movement._update(self)
 
+func fix_frame(wait := false):
+	if playerSprite.flip_h:
+		if wait: await playerSprite.frame_changed
+		var frame := playerSprite.sprite_frames.get_frame_texture(playerSprite.animation,playerSprite.frame).get_size()
+		if frame.x > 16.0:
+			playerSprite.offset.x = -frame.x + 8.0
+		else: playerSprite.offset.x = -8.0
+	else: playerSprite.offset.x = -8.0
+
 ## Called every frame.
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
 	# INFO animations
 	animation_flip_check()
+	fix_frame(true)
 	# Run
 	walk_run_animation()
 	# Jump
@@ -270,6 +281,8 @@ func _physics_process(delta: float) -> void:
 	for movement in specialMovements:
 		movement._do_movement_check()
 	
+	_knockback()
+	
 	move_and_slide()
 	global_position = global_position.round()
 
@@ -278,14 +291,20 @@ func _move_left_and_right(delta: float) -> void:
 	if _check_block("move"):
 		velocity.x = 0
 		return
+	var MAX_SPD := maxSpeed
+	if _check_block("move_half"):
+		#print("slow")
+		#velocity.x = lerpf(velocity.x,velocity.x / 2.0,0.5 * delta)
+		MAX_SPD = lerpf(MAX_SPD,maxSpeed / 2.0,0.5 * delta)
+		#return
 	if commandInputs.right.hold and commandInputs.left.hold and appliedValues.movementInputMonitoring:
 		if not appliedValues.instantStop:
 			_decelerate(delta, false)
 		else:
 			velocity.x = -0.1
 	elif commandInputs.right.hold and appliedValues.movementInputMonitoring.x:
-		if velocity.x > maxSpeed or appliedValues.instantAccel:
-			velocity.x = maxSpeed
+		if velocity.x > MAX_SPD or appliedValues.instantAccel:
+			velocity.x = MAX_SPD
 		else:
 			velocity.x += appliedValues.acceleration * delta
 		if velocity.x < 0:
@@ -294,8 +313,8 @@ func _move_left_and_right(delta: float) -> void:
 			else:
 				velocity.x = -0.1
 	elif commandInputs.left.hold and appliedValues.movementInputMonitoring.y:
-		if velocity.x < -maxSpeed or appliedValues.instantAccel:
-			velocity.x = -maxSpeed
+		if velocity.x < -MAX_SPD or appliedValues.instantAccel:
+			velocity.x = -MAX_SPD
 		else:
 			velocity.x -= appliedValues.acceleration * delta
 		if velocity.x > 0:
@@ -379,9 +398,24 @@ func _jump_and_gravity() -> void:
 			appliedValues.terminalVelocity = terminalVelocity
 			appliedValues.gravityActive = true
 
+var do_knock := false
+var ktw : Tween
+func _knockback() -> void:
+	if do_knock: do_knock = false
+	else: return
+	if ktw: ktw.kill()
+	ktw = create_tween()
+	var kmod := 0.0
+	if playerSprite.flip_h: kmod = 16.0
+	else: kmod = -16.0
+	ktw.tween_property(self,"global_position:x",global_position.x + kmod,0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+
 ## The actual jump.
+signal jump_performed
 func _jump() -> void:
+	if _check_block("jump"): return
 	if appliedValues.jumpCount > 0:
+		jump_performed.emit()
 		velocity.y = -appliedValues.jumpMagnitude
 		appliedValues.jumpCount += -1
 		appliedValues.jumpWasPressed = false
@@ -444,8 +478,45 @@ func play_animation(animationName: StringName, speed: float = 1) -> void:
 		if playerSprite.animation != animations[animationName]:
 			playerSprite.play(animations[animationName])
 	elif playerSprite.sprite_frames.has_animation(animationName): 
-		print("hi")
+		#print("hi")
 		playerSprite.play(animationName)
+
+var atk_combo := 0
+var atk_combo_timer : SceneTreeTimer
+const atk_combo_lapse := 0.55
+signal atk_finisher
+func play_attack_animation():
+	if atk_combo > 2: return
+	if playerSprite.animation in ["attack","attack_b","attack_c"]: return
+	if atk_combo_timer: 
+		#print("combo! ",atk_combo)
+		atk_combo += 1
+	match atk_combo:
+		0:
+			playerSprite.play("attack")
+			await playerSprite.animation_finished
+			atk_combo_timer = get_tree().create_timer(atk_combo_lapse)
+			atk_combo_timer.timeout.connect(combo_reset)
+		1:
+			playerSprite.play("attack_b")
+			await playerSprite.animation_finished
+			if atk_combo_timer: atk_combo_timer.timeout.disconnect(combo_reset)
+			atk_combo_timer = get_tree().create_timer(atk_combo_lapse * 0.8)
+			atk_combo_timer.timeout.connect(combo_reset)
+		2:
+			playerSprite.play("attack_c")
+			await playerSprite.frame_changed
+			do_knock = true
+			atk_finisher.emit()
+			await playerSprite.animation_finished
+			#combo_reset()
+			#if atk_combo_timer: atk_combo_timer.timeout.disconnect(combo_reset)
+			#atk_combo_timer = get_tree().create_timer(atk_combo_lapse * 0.7)
+			#atk_combo_timer.timeout.connect(combo_reset)
+
+func combo_reset():
+		atk_combo = 0
+		atk_combo_timer = null
 
 ## Checks for special blockers from special movements.
 func _check_block(blockType: String) -> bool:
