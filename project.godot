@@ -14,19 +14,23 @@ config/name="New Game Project"
 config/features=PackedStringArray("4.7")
 config/icon="res://icon.svg"
 
+[autoload]
+
+PhantomCameraManager="*uid://duq6jhf6unyis"
+
 [display]
 
-window/size/viewport_width=256
-window/size/viewport_height=144
-window/size/window_width_override=512
-window/size/window_height_override=288
-window/stretch/mode="canvas_items"
+window/size/viewport_width=208
+window/size/viewport_height=117
+window/size/window_width_override=416
+window/size/window_height_override=234
+window/stretch/mode="viewport"
 window/stretch/aspect="keep_height"
 window/stretch/scale_mode="integer"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/majordomo/plugin.cfg")
+enabled=PackedStringArray("res://addons/majordomo/plugin.cfg", "res://addons/phantom_camera/plugin.cfg")
 
 [input]
 
@@ -76,3 +80,5 @@ attack={
 textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+2d/snap/snap_2d_transforms_to_pixel=true
+2d/snap/snap_2d_vertices_to_pixel=true

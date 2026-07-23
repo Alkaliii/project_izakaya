@@ -77,6 +77,8 @@ var animationCustomFlip: bool = false:
 		animationCustomFlip = value
 		notify_property_list_changed()
 
+signal attack(state : bool)
+
 ## Custom getter for inputs and animations.
 func _get(property: StringName) -> Variant:
 	if Engine.is_editor_hint():
@@ -269,6 +271,7 @@ func _physics_process(delta: float) -> void:
 		movement._do_movement_check()
 	
 	move_and_slide()
+	global_position = global_position.round()
 
 ## Move left and right. Called in physics process. Moved outside to make reading easier.
 func _move_left_and_right(delta: float) -> void:
@@ -351,7 +354,7 @@ func _jump_and_gravity() -> void:
 		if not is_on_floor() and not is_on_wall():
 			if coyoteTime > 0:
 				_coyote_time()
-		if commandInputs.jump.tap and not is_on_wall():
+		if commandInputs.jump.hold and not is_on_wall():
 			if appliedValues.coyoteActive:
 				appliedValues.coyoteActive = false
 				_jump()
@@ -360,7 +363,7 @@ func _jump_and_gravity() -> void:
 				_set_after_time("appliedValues/jumpWasPressed", false, jumpBuffering)
 			elif jumpBuffering == 0 and coyoteTime == 0 and is_on_floor():
 				_jump()
-		elif commandInputs.jump.tap and is_on_floor():
+		elif commandInputs.jump.hold and is_on_floor():
 			_jump()
 		if is_on_floor():
 			appliedValues.jumpCount = jumps
@@ -370,7 +373,7 @@ func _jump_and_gravity() -> void:
 	elif jumps > 1:
 		if is_on_floor():
 			appliedValues.jumpCount = jumps
-		if commandInputs.jump.tap and appliedValues.jumpCount > 0 and not is_on_wall():
+		if commandInputs.jump.hold and appliedValues.jumpCount > 0 and not is_on_wall():
 			velocity.y = -appliedValues.jumpMagnitude
 			appliedValues.jumpCount -= 1
 			appliedValues.terminalVelocity = terminalVelocity

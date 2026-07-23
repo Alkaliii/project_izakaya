@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://cxntm12tjeroy"]
 
+[ext_resource type="Script" uid="uid://bd046eokvcnu2" path="res://addons/phantom_camera/scripts/phantom_camera_host/phantom_camera_host.gd" id="1_47fth"]
 [ext_resource type="Script" uid="uid://r48ickdxd3kr" path="res://addons/PlayerController/PlatformerController2D.gd" id="1_kni0s"]
 [ext_resource type="Script" uid="uid://dn1hfn56twvon" path="res://src/schema/player_controller_ex.gd" id="2_e5m36"]
 [ext_resource type="Texture2D" uid="uid://dhvk6o2qotw4h" path="res://assets/small_sprites-01.png" id="2_kni0s"]
@@ -10,11 +11,13 @@
 [ext_resource type="Script" uid="uid://b7fmu2yoo286n" path="res://src/schema/fairy_controller.gd" id="6_rx1b3"]
 [ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/hurtbox.gd" id="7_5d40o"]
 [ext_resource type="Shader" uid="uid://c3epg5t7vexup" path="res://assets/shaders/bounce2D.gdshader" id="7_muppb"]
+[ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="11_bdcg6"]
+[ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="12_47fth"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l06g0"]
 size = Vector2(2000, 250)
 
-[sub_resource type="Resource" id="Resource_l06g0"]
+[sub_resource type="Resource" id="Resource_bvvr5"]
 script = ExtResource("3_hqd1p")
 metadata/_custom_type_script = "uid://eiygrbdusiyg"
 
@@ -96,6 +99,10 @@ region = Rect2(16, 128, 16, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_a0vr8"]
 atlas = ExtResource("2_kni0s")
 region = Rect2(32, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v5rs3"]
+atlas = ExtResource("2_kni0s")
+region = Rect2(0, 144, 48, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_a2p3r"]
 atlas = ExtResource("2_kni0s")
@@ -207,6 +214,14 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_v5rs3")
+}],
+"loop": 1,
+"name": &"jump_attack",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_a2p3r")
 }, {
 "duration": 1.0,
@@ -234,6 +249,10 @@ size = Vector2(16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_muppb"]
 size = Vector2(8, 8)
+
+[sub_resource type="Resource" id="Resource_4jusf"]
+script = ExtResource("12_47fth")
+transition = 4
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rx1b3"]
 shader = ExtResource("7_muppb")
@@ -305,7 +324,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_q4bkd")
 }],
-"loop": 1,
+"loop": 0,
 "name": &"buff",
 "speed": 5.0
 }, {
@@ -346,7 +365,22 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_pdl27"]
 size = Vector2(16, 16)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5d40o"]
+size = Vector2(12, 12)
+
 [node name="Arena" type="Node2D" unique_id=1968502032]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=813887779]
+physics_interpolation_mode = 1
+top_level = true
+position = Vector2(0, -50)
+editor_draw_limits = true
+
+[node name="PhantomCameraHost" type="Node" parent="Camera2D" unique_id=2137048564]
+process_priority = 300
+process_physics_priority = 300
+script = ExtResource("1_47fth")
+metadata/_custom_type_script = "uid://bd046eokvcnu2"
 
 [node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=2021122701]
 position = Vector2(0, 125)
@@ -356,7 +390,7 @@ collision_mask = 14
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=2006027512]
 shape = SubResource("RectangleShape2D_l06g0")
 
-[node name="PlatformerController2D" type="CharacterBody2D" parent="." unique_id=1123232948 node_paths=PackedStringArray("playerSprite", "playerCollider")]
+[node name="Player" type="CharacterBody2D" parent="." unique_id=1123232948 node_paths=PackedStringArray("playerSprite", "playerCollider")]
 position = Vector2(0, -50)
 collision_layer = 4
 collision_mask = 10
@@ -377,10 +411,11 @@ animations = {
 "falling": "falling",
 "idle": "idle",
 "jump": "jump",
+"jump_attack": "jump_attack",
 "run": "walk",
 "walk": "walk"
 }
-specialMovements = Array[ExtResource("2_lru8j")]([SubResource("Resource_l06g0")])
+specialMovements = Array[ExtResource("2_lru8j")]([SubResource("Resource_bvvr5")])
 inputleft = "move_left"
 inputright = "move_right"
 inputup = "move_up"
@@ -395,41 +430,58 @@ animationjump = "jump"
 animationrun = "walk"
 animationfalling = "falling"
 animationattack = "attack"
+animationjump_attack = "jump_attack"
 metadata/_custom_type_script = "uid://r48ickdxd3kr"
 
-[node name="PlayerControllerEx" type="Node" parent="PlatformerController2D" unique_id=298680947 node_paths=PackedStringArray("player_controller", "attack_box", "detect_box")]
+[node name="PlayerControllerEx" type="Node" parent="Player" unique_id=298680947 node_paths=PackedStringArray("player_controller", "attack_box", "detect_box")]
 script = ExtResource("2_e5m36")
 player_controller = NodePath("..")
 attack_box = NodePath("../PlayerAttack")
 detect_box = NodePath("../PlayerDetect")
 
-[node name="PlayerCollider" type="CollisionShape2D" parent="PlatformerController2D" unique_id=1672646615]
+[node name="PlayerCollider" type="CollisionShape2D" parent="Player" unique_id=1672646615]
 shape = SubResource("RectangleShape2D_2dr56")
 
-[node name="Camera2D" type="Camera2D" parent="PlatformerController2D" unique_id=1634676786]
-zoom = Vector2(1.5, 1.5)
-
-[node name="PlayerSprite" type="AnimatedSprite2D" parent="PlatformerController2D" unique_id=1964975575]
+[node name="PlayerSprite" type="AnimatedSprite2D" parent="Player" unique_id=1964975575]
+texture_filter = 1
+texture_repeat = 1
 sprite_frames = SubResource("SpriteFrames_l06g0")
+animation = &"walk"
 
-[node name="PlayerAttack" type="Area2D" parent="PlatformerController2D" unique_id=1149579632]
+[node name="PlayerAttack" type="Area2D" parent="Player" unique_id=1149579632]
+show_behind_parent = true
+position = Vector2(16, 0)
 collision_layer = 32
 collision_mask = 64
 script = ExtResource("6_ejudc")
+box_tag = 1
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformerController2D/PlayerAttack" unique_id=320339385]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/PlayerAttack" unique_id=320339385]
 shape = SubResource("RectangleShape2D_wcd5e")
 disabled = true
 debug_color = Color(1, 0, 0, 0.41960785)
 
-[node name="PlayerDetect" type="Area2D" parent="PlatformerController2D" unique_id=1100312235]
+[node name="PlayerDetect" type="Area2D" parent="Player" unique_id=1100312235]
 collision_layer = 64
 collision_mask = 32
 script = ExtResource("7_5d40o")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlatformerController2D/PlayerDetect" unique_id=373487423]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Player/PlayerDetect" unique_id=373487423]
 shape = SubResource("RectangleShape2D_muppb")
 debug_color = Color(0, 1, 0, 0.41960785)
+
+[node name="PhantomCamera2D" type="Node2D" parent="Player" unique_id=1562299744 node_paths=PackedStringArray("follow_target")]
+top_level = true
+position = Vector2(0, -50)
+script = ExtResource("11_bdcg6")
+follow_mode = 5
+follow_target = NodePath("..")
+snap_to_pixel = true
+tween_resource = SubResource("Resource_4jusf")
+dead_zone_width = 0.25
+dead_zone_height = 0.25
+draw_limits = true
+metadata/_custom_type_script = "uid://bhexx6mj1xv3q"
 
 [node name="Fairy" type="CharacterBody2D" parent="." unique_id=1896839466]
 position = Vector2(-100, -50)
@@ -437,11 +489,22 @@ collision_layer = 16
 script = ExtResource("6_rx1b3")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Fairy" unique_id=578050505]
+texture_filter = 1
 material = SubResource("ShaderMaterial_rx1b3")
 sprite_frames = SubResource("SpriteFrames_wcd5e")
-animation = &"buff"
-frame = 3
-frame_progress = 0.26863956
+animation = &"hurt"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Fairy" unique_id=1680694962]
+show_behind_parent = true
 shape = SubResource("RectangleShape2D_pdl27")
+
+[node name="FairyDetect" type="Area2D" parent="Fairy" unique_id=2070795915]
+show_behind_parent = true
+collision_layer = 64
+collision_mask = 32
+script = ExtResource("7_5d40o")
+metadata/_custom_type_script = "uid://bmr2kt3egosib"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Fairy/FairyDetect" unique_id=2142772068]
+shape = SubResource("RectangleShape2D_5d40o")
+debug_color = Color(0, 1, 0, 0.41960785)
