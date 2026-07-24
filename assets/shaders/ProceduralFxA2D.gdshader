@@ -203,8 +203,8 @@ uniform int use_simple_mask : hint_enum("No","X","Y","Xin","Yin","XY","XYin","Xi
 uniform float simple_mask_power = 2.0;
 uniform vec2 simplem_edge = vec2(0.0,1.0);
 uniform bool simple_only_alpha = true;
-group_uniforms MASK.OTHER;
-uniform bool mask_factor_distortion = false;
+//group_uniforms MASK.OTHER;
+//uniform bool mask_factor_distortion = false;
 
 group_uniforms COLORIZE;
 ///**
@@ -219,7 +219,7 @@ group_uniforms COLORIZE;
 	//* This value will make the shader glow/darken.
 	//Works best when [member WorldEnvironment.Glow] is enabled.
 //*/
-//uniform float emission_intensity : hint_range(0.1, 32.0, 0.1) = 1.0;
+uniform float emission_intensity : hint_range(0.1, 32.0, 0.1) = 1.0;
 //
 ///**
 	//* This value will posterize the shading resulting in value bands.
@@ -228,6 +228,7 @@ group_uniforms COLORIZE;
 //*/
 //uniform int chunky_color : hint_range(0, 100, 1) = 0;
 uniform float tweak_alpha = 1.0;
+uniform float step_alpha = 1.0;
 //
 //group_uniforms COLORIZE.TWEAK_GRADIENT;
 //uniform vec2 shift_gradient = vec2(0.0);
@@ -423,9 +424,9 @@ float random(vec2 uv) {
 	}
 }
 
-float fresnel(float amount, vec3 normal, vec3 view) {
-	return pow((1.0 - dot(normalize(normal), normalize(view))), amount);
-}
+//float fresnel(float amount, vec3 normal, vec3 view) {
+	//return pow((1.0 - dot(normalize(normal), normalize(view))), amount);
+//}
 
 vec2 rotate(vec2 uv, vec2 pivot, float angle) {
 	mat2 rotation = mat2(vec2(sin(angle), -cos(angle)),
@@ -442,39 +443,39 @@ vec2 scale(vec2 uv, float x, float y) {
 	uv += 0.5;
 	return uv;
 }
-mat3 rotateX(float theta) {
-	float cosa = cos(theta);
-	float sina = sin(theta);
-
-	mat3 rotate_x  = mat3(
-	   vec3(1.0, 0.0, 0.0),
-	   vec3(0.0, cosa, -sina),
-	   vec3(0.0, sina, cosa)
-	);
-	return rotate_x;
-}
-mat3 rotateY(float theta) {
-	float cosa = cos(theta);
-	float sina = sin(theta);
-
-	mat3 rotate_y  = mat3(
-	   vec3(cosa, 0.0, sina),
-	   vec3(0.0, 1.0, 0.0),
-	   vec3(-sina, 0.0, cosa)
-	);
-	return rotate_y;
-}
-mat3 rotateZ(float theta) {
-	float cosa = cos(theta);
-	float sina = sin(theta);
-
-	mat3 rotate_z  = mat3(
-	   vec3(cosa,-sina, 0.0),
-	   vec3(sina, cosa, 0.0),
-	   vec3(0.0, 0.0, 1.0)
-	);
-	return rotate_z;
-}
+//mat3 rotateX(float theta) {
+	//float cosa = cos(theta);
+	//float sina = sin(theta);
+//
+	//mat3 rotate_x  = mat3(
+	   //vec3(1.0, 0.0, 0.0),
+	   //vec3(0.0, cosa, -sina),
+	   //vec3(0.0, sina, cosa)
+	//);
+	//return rotate_x;
+//}
+//mat3 rotateY(float theta) {
+	//float cosa = cos(theta);
+	//float sina = sin(theta);
+//
+	//mat3 rotate_y  = mat3(
+	   //vec3(cosa, 0.0, sina),
+	   //vec3(0.0, 1.0, 0.0),
+	   //vec3(-sina, 0.0, cosa)
+	//);
+	//return rotate_y;
+//}
+//mat3 rotateZ(float theta) {
+	//float cosa = cos(theta);
+	//float sina = sin(theta);
+//
+	//mat3 rotate_z  = mat3(
+	   //vec3(cosa,-sina, 0.0),
+	   //vec3(sina, cosa, 0.0),
+	   //vec3(0.0, 0.0, 1.0)
+	//);
+	//return rotate_z;
+//}
 
 float uv2mask(vec2 uv, int type, float power, vec2 edge) {
 	// generates a mask using UV;
@@ -1314,10 +1315,11 @@ void fragment() {
 	
 	COLOR.rgb = shape.rgb * gm_color.rgb * mask * COLOR.rgb;
 	if (simple_only_alpha == false) {COLOR.rgb *= simple_mask;}
-	//COLOR.rgb *= emission_intensity;
 	//ALBEDO = vec3(simple_mask);
 	//ALBEDO = vec3(mask);
 	float alpha = smoothstep(0.0,tweak_alpha/10.0,shapeshade * mask * simple_mask) * gm_color.a * COLOR.a;
+	if (step_alpha > 1.0) {alpha = floor(alpha * step_alpha) / step_alpha;}
 	
 	COLOR.a *= clamp(alpha,0.0,1.0);
+	COLOR.a *= emission_intensity;
 }

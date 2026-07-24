@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://c1loopket4kp5"]
+
+[ext_resource type="Texture2D" uid="uid://vj4tken5mq0t" path="res://assets/artwork/small-tiles-01.png" id="1_vc34u"]
+[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/schema/hitbox.gd" id="2_v55hx"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l06g0"]
+atlas = ExtResource("1_vc34u")
+region = Rect2(240, 128, 16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l06g0"]
+size = Vector2(16, 16)
+
+[node name="Ladder" type="Node2D" unique_id=1136614795]
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1420968716]
+texture = SubResource("AtlasTexture_l06g0")
+
+[node name="Hitbox2D" type="Area2D" parent="." unique_id=403395448]
+collision_layer = 32
+collision_mask = 64
+script = ExtResource("2_v55hx")
+box_tag = 4
+metadata/_custom_type_script = "uid://bxtuhccjq3t53"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox2D" unique_id=300237203]
+shape = SubResource("RectangleShape2D_l06g0")

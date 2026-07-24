@@ -5,13 +5,18 @@
 [ext_resource type="Script" uid="uid://eiygrbdusiyg" path="res://addons/PlayerController/SpecialMovements/Attack.gd" id="3_ndfpv"]
 [ext_resource type="Script" uid="uid://dn1hfn56twvon" path="res://src/schema/player_controller_ex.gd" id="4_dxtnc"]
 [ext_resource type="Script" uid="uid://js72fh7ryekh" path="res://addons/PlayerController/SpecialMovements/WallJump.gd" id="4_hclnh"]
-[ext_resource type="Texture2D" uid="uid://dhvk6o2qotw4h" path="res://assets/small_sprites-01.png" id="5_nic3v"]
-[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/hitbox.gd" id="6_fxwnc"]
-[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/hurtbox.gd" id="7_hc2cd"]
+[ext_resource type="Script" uid="uid://drhxkd0pe1k7p" path="res://addons/PlayerController/SpecialMovements/Climbing.gd" id="5_nc72e"]
+[ext_resource type="Texture2D" uid="uid://dhvk6o2qotw4h" path="res://assets/artwork/small_sprites-01.png" id="5_nic3v"]
+[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/schema/hitbox.gd" id="6_fxwnc"]
+[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/schema/hurtbox.gd" id="7_hc2cd"]
+[ext_resource type="Shader" uid="uid://cbyre71vouwqn" path="res://assets/shaders/actorShader2D.gdshader" id="7_mlfxl"]
 [ext_resource type="Script" uid="uid://bhexx6mj1xv3q" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_2d.gd" id="8_mlfxl"]
 [ext_resource type="Script" uid="uid://8umksf8e80fw" path="res://addons/phantom_camera/scripts/resources/tween_resource.gd" id="9_nc72e"]
-[ext_resource type="FontFile" uid="uid://jqxdmv3ew4or" path="res://assets/fonts/pixel_operator/PixelOperator8.ttf" id="11_ndfpv"]
 [ext_resource type="Shader" uid="uid://dfu4tdh7rg5o7" path="res://assets/shaders/ProceduralFxA2D.gdshader" id="12_dxtnc"]
+[ext_resource type="FontFile" uid="uid://3lcefyjbjcf7" path="res://assets/fonts/quaver/quaver.ttf" id="12_nic3v"]
+[ext_resource type="Texture2D" uid="uid://d3gg4gdb8x7qw" path="res://assets/artwork/some_ui.png" id="13_fxwnc"]
+[ext_resource type="Script" uid="uid://g1ds8v4vjb5k" path="res://src/schema/health_bar.gd" id="14_hc2cd"]
+[ext_resource type="FontFile" uid="uid://3r64nh6riuee" path="res://assets/fonts/pixel_operator/PixelOperatorHB.ttf" id="15_hc2cd"]
 
 [sub_resource type="Resource" id="Resource_bvvr5"]
 script = ExtResource("3_ndfpv")
@@ -20,9 +25,13 @@ metadata/_custom_type_script = "uid://eiygrbdusiyg"
 [sub_resource type="Resource" id="Resource_3n7b0"]
 script = ExtResource("4_hclnh")
 inputPauseAfterWallJump = 0.05
-wallKickAngle = 85.0
+wallKickAngle = 90.0
 wallSliding = 5.0
 metadata/_custom_type_script = "uid://js72fh7ryekh"
+
+[sub_resource type="Resource" id="Resource_l06g0"]
+script = ExtResource("5_nc72e")
+metadata/_custom_type_script = "uid://drhxkd0pe1k7p"
 
 [sub_resource type="Curve" id="Curve_fxwnc"]
 _data = [Vector2(0.05, 0), 0.0, 4.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
@@ -135,8 +144,9 @@ shader_parameter/use_simple_mask = 0
 shader_parameter/simple_mask_power = 2.0
 shader_parameter/simplem_edge = Vector2(0, 1)
 shader_parameter/simple_only_alpha = true
-shader_parameter/mask_factor_distortion = false
+shader_parameter/emission_intensity = 1.0
 shader_parameter/tweak_alpha = 1.0
+shader_parameter/step_alpha = 1.0
 shader_parameter/apply_rainbow = 0
 shader_parameter/rainbow_str = 1.0
 shader_parameter/r_time_scale = 1.0
@@ -270,8 +280,9 @@ shader_parameter/use_simple_mask = 0
 shader_parameter/simple_mask_power = 2.0
 shader_parameter/simplem_edge = Vector2(0, 1)
 shader_parameter/simple_only_alpha = true
-shader_parameter/mask_factor_distortion = false
+shader_parameter/emission_intensity = 1.0
 shader_parameter/tweak_alpha = 1.0
+shader_parameter/step_alpha = 1.0
 shader_parameter/apply_rainbow = 0
 shader_parameter/rainbow_str = 1.0
 shader_parameter/r_time_scale = 1.0
@@ -301,8 +312,18 @@ shader_parameter/randomness_seed = 0
 shader_parameter/index_shift_randomness = 0
 shader_parameter/custom_index = 0
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_2dr56"]
-size = Vector2(16, 16)
+[sub_resource type="CircleShape2D" id="CircleShape2D_tefb0"]
+radius = 8.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_nc72e"]
+resource_local_to_scene = true
+shader = ExtResource("7_mlfxl")
+shader_parameter/hit = false
+shader_parameter/hit_thresh = 0.2
+shader_parameter/hit_step = 0.2
+shader_parameter/hit_speed = 104.0
+shader_parameter/soft_flash = false
+shader_parameter/s_flash_speed = 32.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dxtnc"]
 atlas = ExtResource("5_nic3v")
@@ -344,6 +365,14 @@ region = Rect2(65, 112, 29, 16)
 atlas = ExtResource("5_nic3v")
 region = Rect2(96, 112, 16, 16)
 
+[sub_resource type="AtlasTexture" id="AtlasTexture_m3eag"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 176, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fxrqa"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 176, 16, 16)
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_omksg"]
 atlas = ExtResource("5_nic3v")
 region = Rect2(0, 0, 16, 16)
@@ -371,6 +400,10 @@ region = Rect2(64, 64, 16, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_muppb"]
 atlas = ExtResource("5_nic3v")
 region = Rect2(80, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wwu71"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 32, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_ejudc"]
 atlas = ExtResource("5_nic3v")
@@ -411,6 +444,26 @@ region = Rect2(32, 128, 16, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_hj5eh"]
 atlas = ExtResource("5_nic3v")
 region = Rect2(11, 144, 23, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_856a1"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 160, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_jo1vc"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 160, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wihxi"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(32, 160, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4huw0"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(48, 160, 18, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_126wl"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 208, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_a2p3r"]
 atlas = ExtResource("5_nic3v")
@@ -485,6 +538,17 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_m3eag")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fxrqa")
+}],
+"loop": 1,
+"name": &"climbing",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_omksg")
 }],
 "loop": 1,
@@ -513,6 +577,14 @@ animations = [{
 "loop": 1,
 "name": &"falling",
 "speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wwu71")
+}],
+"loop": 0,
+"name": &"hurt",
+"speed": 5.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -561,6 +633,31 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_856a1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_jo1vc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wihxi")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4huw0")
+}],
+"loop": 0,
+"name": &"kneel_over",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_126wl")
+}],
+"loop": 1,
+"name": &"latch",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_a2p3r")
 }, {
 "duration": 1.0,
@@ -591,18 +688,58 @@ size = Vector2(8, 8)
 
 [sub_resource type="Resource" id="Resource_4jusf"]
 script = ExtResource("9_nc72e")
+duration = 0.5
 transition = 10
 ease = 1
 
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_l06g0"]
+blend_mode = 4
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_atx3q"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(0, 96, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l06g0"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(0, 64, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d28pn"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(40, 64, 8, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2dr56"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(0, 96, 48, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_l06g0"]
+texture = SubResource("AtlasTexture_2dr56")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2hj6y"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(0, 80, 48, 16)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_m3eag"]
+texture = SubResource("AtlasTexture_2hj6y")
+texture_margin_left = 6.0
+texture_margin_top = 6.0
+texture_margin_right = 6.0
+texture_margin_bottom = 6.0
+
 [node name="Player" type="CharacterBody2D" unique_id=1451421413 node_paths=PackedStringArray("playerSprite", "playerCollider")]
 collision_layer = 4
-collision_mask = 10
+collision_mask = 2
 script = ExtResource("1_rclot")
 playerSprite = NodePath("PlayerSprite")
 playerCollider = NodePath("PlayerCollider")
 inputKeys = {
 "attack": "attack",
+"climb": "move_up",
 "down": "move_down",
+"drop": "move_down",
 "jump": "jump",
 "left": "move_left",
 "right": "move_right",
@@ -611,19 +748,20 @@ inputKeys = {
 }
 animations = {
 "attack": "attack",
+"climbing": "climbing",
 "falling": "falling",
 "idle": "idle",
 "jump": "jump",
 "jump_attack": "jump_attack",
 "run": "walk",
-"slide": "falling",
+"slide": "latch",
 "walk": "walk"
 }
-maxSpeed = 100.0
+maxSpeed = 96.0
 directionalSnap = true
 jumpHeight = 15.0
 descendingGravityFactor = 1.1
-specialMovements = Array[ExtResource("2_hclnh")]([SubResource("Resource_bvvr5"), SubResource("Resource_3n7b0")])
+specialMovements = Array[ExtResource("2_hclnh")]([SubResource("Resource_bvvr5"), SubResource("Resource_3n7b0"), SubResource("Resource_l06g0")])
 inputleft = "move_left"
 inputright = "move_right"
 inputup = "move_up"
@@ -631,6 +769,8 @@ inputdown = "move_down"
 inputjump = "jump"
 inputrun = null
 inputattack = "attack"
+inputclimb = "move_up"
+inputdrop = "move_down"
 animationCustomFlip = false
 animationidle = "idle"
 animationwalk = "walk"
@@ -639,10 +779,11 @@ animationrun = "walk"
 animationfalling = "falling"
 animationattack = "attack"
 animationjump_attack = "jump_attack"
-animationslide = "falling"
+animationslide = "latch"
+animationclimbing = "climbing"
 metadata/_custom_type_script = "uid://r48ickdxd3kr"
 
-[node name="PlayerControllerEx" type="Node" parent="." unique_id=1004097929 node_paths=PackedStringArray("player_controller", "camera", "attack_box", "detect_box", "airburst_parent", "airburst_left", "airburst_right", "debug_speed", "debug_anim")]
+[node name="PlayerControllerEx" type="Node" parent="." unique_id=1004097929 node_paths=PackedStringArray("player_controller", "camera", "attack_box", "detect_box", "airburst_parent", "airburst_left", "airburst_right", "health_bar", "fry_cnt_dwn", "debug_speed", "debug_anim")]
 script = ExtResource("4_dxtnc")
 player_controller = NodePath("..")
 camera = NodePath("../CameraParent/PhantomCamera2D")
@@ -651,6 +792,8 @@ detect_box = NodePath("../PlayerDetect")
 airburst_parent = NodePath("../DustParticles")
 airburst_left = NodePath("../DustParticles/AirBurstLeft")
 airburst_right = NodePath("../DustParticles/AirBurstRight")
+health_bar = NodePath("../CanvasLayer/pUI/mc/HealthBar")
+fry_cnt_dwn = NodePath("../CanvasLayer/pUI/cc/fcd")
 debug_speed = NodePath("../CanvasLayer/debug/VBoxContainer/speed")
 debug_anim = NodePath("../CanvasLayer/debug/VBoxContainer/anim")
 
@@ -701,14 +844,15 @@ scale_amount_curve = SubResource("Curve_dxtnc")
 color_ramp = SubResource("Gradient_nic3v")
 
 [node name="PlayerCollider" type="CollisionShape2D" parent="." unique_id=1482488137]
-shape = SubResource("RectangleShape2D_2dr56")
+shape = SubResource("CircleShape2D_tefb0")
 
 [node name="PlayerSprite" type="AnimatedSprite2D" parent="." unique_id=1586342138]
 texture_filter = 1
 texture_repeat = 1
+material = SubResource("ShaderMaterial_nc72e")
 position = Vector2(0, 4)
 sprite_frames = SubResource("SpriteFrames_l06g0")
-animation = &"attack_b"
+animation = &"climbing"
 centered = false
 offset = Vector2(-8, -8)
 
@@ -738,6 +882,7 @@ debug_color = Color(0, 1, 0, 0.41960785)
 
 [node name="PhantomCamera2D" type="Node2D" parent="CameraParent" unique_id=1079996316 node_paths=PackedStringArray("follow_target")]
 top_level = true
+position = Vector2(0, -16)
 script = ExtResource("8_mlfxl")
 follow_mode = 5
 follow_target = NodePath("..")
@@ -764,13 +909,19 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/debug" unique_id=111782464]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -20.0
+offset_right = 25.0
+grow_vertical = 0
 
 [node name="speed" type="RichTextLabel" parent="CanvasLayer/debug/VBoxContainer" unique_id=1009690074]
 layout_mode = 2
-theme_override_fonts/normal_font = ExtResource("11_ndfpv")
+theme_override_colors/font_shadow_color = Color(0.16862746, 0.16862746, 0.14901961, 1)
+theme_override_constants/shadow_offset_x = 0
+theme_override_fonts/normal_font = ExtResource("12_nic3v")
 theme_override_font_sizes/normal_font_size = 8
 text = "Speed"
 fit_content = true
@@ -779,9 +930,98 @@ autowrap_mode = 0
 
 [node name="anim" type="RichTextLabel" parent="CanvasLayer/debug/VBoxContainer" unique_id=90463801]
 layout_mode = 2
-theme_override_fonts/normal_font = ExtResource("11_ndfpv")
+theme_override_colors/font_shadow_color = Color(0.16862746, 0.16862746, 0.14901961, 1)
+theme_override_constants/shadow_offset_x = 0
+theme_override_fonts/normal_font = ExtResource("12_nic3v")
 theme_override_font_sizes/normal_font_size = 8
 text = "anim"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
+
+[node name="pUI" type="Control" parent="CanvasLayer" unique_id=2107277663]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="cc" type="CenterContainer" parent="CanvasLayer/pUI" unique_id=911263031]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -28.0
+offset_top = -56.0
+offset_right = 28.0
+offset_bottom = 56.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="fcd" type="RichTextLabel" parent="CanvasLayer/pUI/cc" unique_id=27172329]
+visible = false
+z_index = -3
+material = SubResource("CanvasItemMaterial_l06g0")
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+offset_transform_enabled = true
+theme_override_colors/default_color = Color(0, 0, 0, 0.49803922)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 0.49803922)
+theme_override_constants/outline_size = 5
+theme_override_fonts/normal_font = ExtResource("15_hc2cd")
+theme_override_font_sizes/normal_font_size = 112
+bbcode_enabled = true
+text = "3"
+fit_content = true
+autowrap_mode = 0
+
+[node name="mc" type="MarginContainer" parent="CanvasLayer/pUI" unique_id=445281487]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 4
+theme_override_constants/margin_top = 4
+theme_override_constants/margin_right = 4
+theme_override_constants/margin_bottom = 4
+
+[node name="HealthBar" type="TextureProgressBar" parent="CanvasLayer/pUI/mc" unique_id=778335484]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+max_value = 3.0
+step = 0.1
+value = 1.0
+texture_under = SubResource("AtlasTexture_atx3q")
+texture_progress = SubResource("AtlasTexture_l06g0")
+script = ExtResource("14_hc2cd")
+
+[node name="hbedge" type="TextureRect" parent="CanvasLayer/pUI/mc/HealthBar" unique_id=1291493226]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 9.0
+offset_top = -8.0
+offset_right = 17.000011
+offset_bottom = 8.0
+grow_vertical = 2
+texture = SubResource("AtlasTexture_d28pn")
+
+[node name="EXPBar" type="ProgressBar" parent="CanvasLayer/pUI/mc" unique_id=681864253]
+visible = false
+modulate = Color(1, 1, 1, 0.2509804)
+custom_minimum_size = Vector2(96, 0)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme_override_styles/background = SubResource("StyleBoxTexture_l06g0")
+theme_override_styles/fill = SubResource("StyleBoxTexture_m3eag")
+value = 16.0
+show_percentage = false

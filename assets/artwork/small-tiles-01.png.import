@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dcfk1jgcf6iih"
-path="res://.godot/imported/fairy-sprite-sheet-01.png-eed09ca4043603a8b3cc040352c82212.ctex"
+uid="uid://vj4tken5mq0t"
+path="res://.godot/imported/small-tiles-01.png-9a26344f78bfb42454a363852d261e1a.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/fairy-sprite-sheet-01.png"
-dest_files=["res://.godot/imported/fairy-sprite-sheet-01.png-eed09ca4043603a8b3cc040352c82212.ctex"]
+source_file="res://assets/artwork/small-tiles-01.png"
+dest_files=["res://.godot/imported/small-tiles-01.png-9a26344f78bfb42454a363852d261e1a.ctex"]
 
 [params]
 

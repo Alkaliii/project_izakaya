@@ -1,71 +1,63 @@
 @tool
 extends SpecialMovementsPlatformer2D
-class_name Attack
+class_name ClimbLadder
 
 ## Override commands and animations.
 ## Example:
+## requiredCommands = PackedStringArray(["dash"])
+## requiredAnimations = PackedStringArray(["dash"])
 func _set_commands_and_animations() -> void:
 	# This name is shown in the debug menu. Replace it to fit your needs
-	movementName = "Attack"
-	requiredCommands = PackedStringArray(["attack"])
-	requiredAnimations = PackedStringArray(["attack","jump_attack"])
+	movementName = "ClimbLadder"
+	#requiredCommands = PackedStringArray(["climb","drop"])
+	requiredAnimations = PackedStringArray(["climbing"])
 
 ## Setup function.
 func _on_update() -> void:
-	#if _get_special_flag("attacking"):
-		#if parent.velocity.y > 0.0: 
-			#var block : PackedStringArray = PackedStringArray(["move","moveAnimation","jumpAnimation","jump"])
-			#_set_special_flag("attacking", true, block)
 	pass
 
 ## Animation check function. If you need to change animations do it here mainly.
 func _animation_check() -> void:
-	if _get_special_flag("attacking"):
-		if parent.is_on_floor():
-			parent.play_attack_animation()
-			#parent.playerSprite.offset.x = -8.0 if parent.playerSprite.flip_h else 8.0
-		else: parent.play_animation("jump_attack")
+	if _get_special_flag("climbing_ladder") and parent.commandInputs.up.hold:
+		#if parent.playerSprite.animation != "climbing": 
+		if !parent.playerSprite.is_playing(): 
+			parent.playerSprite.play("climbing")
+		parent.play_animation("climbing")
+	elif _get_special_flag("climbing_ladder"): 
+		parent.playerSprite.pause()
 
 ## Special gravity function. Apply any needed changes to the gravity here. parent.appliedValues.gravity and parent.appliedValues.terminalVelocity changes go here.
 func _gravity() -> void:
-	#if _get_special_flag("attacking"):
-		#parent.appliedValues.gravity = 0.0
-	pass
+	if parent.commandInputs.up.hold and _get_special_flag("climbing_ladder"):
+		parent.appliedValues.gravity = 0.0
+	elif _get_special_flag("climbing_ladder"):
+		parent.appliedValues.gravity = 0.0
 
 ## Movement check function. The main component of this. Check for inputs with parent.commandInputs.<your_input>.<tap/hold/release>
 func _movement_check() -> void:
-	if parent.commandInputs.attack.tap or parent.atk_combo_buffer: 
-		if !parent.is_on_wall() and !_get_special_flag("attacking"):
-			var block : PackedStringArray = PackedStringArray(["moveAnimation","jumpAnimation","jump","move_half"])
-			#if parent.is_on_floor() and parent.velocity.y > 0.0 and !Input.is_action_just_pressed("jump"): 
-				#print("blocking ",parent.is_on_floor()," ",is_zero_approx(parent.velocity.y)," ",parent.velocity.y > 0.0)
-				#block.append("move")
-			_set_special_flag("attacking", true, block)
-			parent.attack.emit(true)
-			if parent.is_on_floor() and parent.velocity.y >= 0.0: await parent.play_attack_animation()
-			else: await parent.playerSprite.animation_finished
-			parent.attack.emit(false)
-			_set_special_flag("attacking", false)
-		elif !parent.atk_combo_buffer:
-			parent.atk_combo_buffer = true
-			parent._set_after_time("atk_combo_buffer",false,0.2)
-		#parent.playerSprite.offset.x = 0.0
-	#if _get_special_flag("attacking"):
-		#if parent.velocity.y > 1.0 or parent.velocity.y < 1.0:
-			#_set_special_flag("attacking", true, ["move","moveAnimation", "jumpAnimation"])
-			##print("stop move")
-			##parent.velocity = Vector2.ZERO
-		#else:
-			#_set_special_flag("attacking", true, ["moveAnimation", "jumpAnimation"])
+	if parent.playerSprite.animation == "jump": return
+	if _get_special_flag("block_ladder"): 
+		_set_special_flag("climbing_ladder",false)
+		return
+	if parent.commandInputs.up.hold and _get_special_flag("near_ladder"):
+		#print("climbs")
+		_set_special_flag("climbing_ladder",true,["moveAnimation","move"])
+		parent.play_animation("climbing")
+	if parent.commandInputs.up.hold and _get_special_flag("climbing_ladder"):
+		parent.velocity.y = -50
+	elif _get_special_flag("climbing_ladder"):
+		parent.velocity.y = 0.0
+	if (parent.commandInputs.down.tap or parent.commandInputs.jump.tap or !_get_special_flag("near_ladder")) and _get_special_flag("climbing_ladder"):
+		_set_special_flag("climbing_ladder",false)
+		if parent.commandInputs.jump.tap: parent._jump(true)
 
 ## Jump override function. If you need a custom jump function it goes here. Return true if you applied changes to override usual jump behavior, return false otherwise.
 func _jump_override() -> bool:
-	#if _get_special_flag("attacking"):
-		#return true
 	return false
 
 ## Sprite flip check function. Return true if you need the sprite to not flip under certain circumstances.
 func _flip_check() -> bool:
+	#if parent.commandInputs.up.hold and _get_special_flag("climbing_ladder"): return true
 	return false
 
 ### Exports variables for debug testing live.

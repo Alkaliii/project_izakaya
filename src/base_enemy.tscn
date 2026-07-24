@@ -1,0 +1,133 @@
+[gd_scene format=3 uid="uid://bemvujp07hg77"]
+
+[ext_resource type="Script" uid="uid://bvx2y3oncjcsd" path="res://src/schema/enemy_controller.gd" id="1_0cvci"]
+[ext_resource type="Texture2D" uid="uid://cxug6tjhq7bt5" path="res://assets/artwork/enemy_sprites-01.png" id="2_r8srb"]
+[ext_resource type="Shader" uid="uid://cbyre71vouwqn" path="res://assets/shaders/actorShader2D.gdshader" id="2_wvt3w"]
+[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/schema/hitbox.gd" id="3_wvt3w"]
+[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/schema/hurtbox.gd" id="4_fnbwq"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_r8srb"]
+shader = ExtResource("2_wvt3w")
+shader_parameter/hit = false
+shader_parameter/hit_thresh = 0.2
+shader_parameter/hit_step = 0.2
+shader_parameter/hit_speed = 104.0
+shader_parameter/soft_flash = false
+shader_parameter/s_flash_speed = 2.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0cvci"]
+atlas = ExtResource("2_r8srb")
+region = Rect2(0, 112, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0yruc"]
+atlas = ExtResource("2_r8srb")
+region = Rect2(0, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sr1ku"]
+atlas = ExtResource("2_r8srb")
+region = Rect2(16, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_w3uix"]
+atlas = ExtResource("2_r8srb")
+region = Rect2(32, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ee0ec"]
+atlas = ExtResource("2_r8srb")
+region = Rect2(48, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_pi51l"]
+atlas = ExtResource("2_r8srb")
+region = Rect2(64, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_b2xkd"]
+atlas = ExtResource("2_r8srb")
+region = Rect2(80, 64, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_l06g0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0cvci")
+}],
+"loop": 0,
+"name": &"hurt",
+"speed": 2.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0yruc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sr1ku")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_w3uix")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ee0ec")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_pi51l")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_b2xkd")
+}],
+"loop": 1,
+"name": &"idle",
+"speed": 5.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2dr56"]
+size = Vector2(16, 16)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l06g0"]
+size = Vector2(12, 12)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_r8srb"]
+size = Vector2(8, 8)
+
+[node name="BaseEnemy" type="CharacterBody2D" unique_id=1668887543]
+collision_layer = 8
+collision_mask = 2
+script = ExtResource("1_0cvci")
+enemy_movement = 2
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1206461016]
+material = SubResource("ShaderMaterial_r8srb")
+position = Vector2(0, 4)
+sprite_frames = SubResource("SpriteFrames_l06g0")
+animation = &"idle"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2096347317]
+show_behind_parent = true
+shape = SubResource("RectangleShape2D_2dr56")
+debug_color = Color(1, 0.6, 0.69803923, 0.41960785)
+
+[node name="ContactDamage" type="Area2D" parent="." unique_id=42989183]
+show_behind_parent = true
+collision_layer = 32
+collision_mask = 64
+script = ExtResource("3_wvt3w")
+box_tag = 2
+metadata/_custom_type_script = "uid://bxtuhccjq3t53"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ContactDamage" unique_id=467648036]
+shape = SubResource("RectangleShape2D_l06g0")
+debug_color = Color(1, 0, 0, 0.41960785)
+
+[node name="DamageDetect" type="Area2D" parent="." unique_id=86932835]
+show_behind_parent = true
+collision_layer = 64
+collision_mask = 32
+script = ExtResource("4_fnbwq")
+ignore_box_tags = Array[int]([2, 0])
+metadata/_custom_type_script = "uid://bmr2kt3egosib"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DamageDetect" unique_id=1244704482]
+shape = SubResource("RectangleShape2D_r8srb")
+debug_color = Color(1, 0.6, 0.69803923, 0)
+
+[node name="floorCheck" type="RayCast2D" parent="." unique_id=108726807]
+position = Vector2(16, 0)
+target_position = Vector2(0, 16)
+collision_mask = 2

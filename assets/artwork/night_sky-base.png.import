@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://vj4tken5mq0t"
-path="res://.godot/imported/small-tiles-01.png-4602aed4172da3357fc4af676b3ba896.ctex"
+uid="uid://db24y8tgywqoy"
+path="res://.godot/imported/night_sky-base.png-fcd775599b19e0c04a6f0daa22116076.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/small-tiles-01.png"
-dest_files=["res://.godot/imported/small-tiles-01.png-4602aed4172da3357fc4af676b3ba896.ctex"]
+source_file="res://assets/artwork/night_sky-base.png"
+dest_files=["res://.godot/imported/night_sky-base.png-fcd775599b19e0c04a6f0daa22116076.ctex"]
 
 [params]
 

@@ -8,7 +8,8 @@ enum tags {
 	GENERIC,
 	PLAYER,
 	ENEMY,
-	INTERACTION
+	INTERACTION,
+	LADDER,
 }
 
 @export var box_tag : tags = tags.GENERIC

@@ -3,6 +3,12 @@ extends CharacterBody2D
 
 class_name PlatformerController2D
 
+var health : int = 2 : 
+	set(nv):
+		health = clampi(nv,0,3)
+var disabled := false
+var stunned := false
+
 ## ALERT Essential child nodes.
 @export_category("Necesary Child Nodes")
 ## The player sprite.
@@ -236,12 +242,16 @@ func fix_frame(wait := false):
 		if frame.x > 16.0:
 			playerSprite.offset.x = -frame.x + 8.0
 		else: playerSprite.offset.x = -8.0
-	else: playerSprite.offset.x = -8.0
+		if playerSprite.animation == "latch": playerSprite.offset.x = -frame.x + 5.0
+	else: 
+		playerSprite.offset.x = -8.0
+		if playerSprite.animation == "latch": playerSprite.offset.x = -5.0
 
 ## Called every frame.
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
 		return
+	if disabled or stunned: return
 	# INFO animations
 	animation_flip_check()
 	fix_frame(true)
@@ -260,6 +270,11 @@ func _process(_delta: float) -> void:
 ## Called every physics frame.
 func _physics_process(delta: float) -> void:
 	if Engine.is_editor_hint():
+		return
+	if disabled or stunned: 
+		_gravity()
+		_decelerate(delta, false)
+		move_and_slide()
 		return
 	if not appliedValues.dset:
 		appliedValues.gdelta = delta
@@ -281,7 +296,7 @@ func _physics_process(delta: float) -> void:
 	for movement in specialMovements:
 		movement._do_movement_check()
 	
-	_knockback()
+	_forwardknock()
 	
 	move_and_slide()
 	global_position = global_position.round()
@@ -350,8 +365,7 @@ func _decelerate(delta: float, vertical: bool) -> void:
 	elif vertical and velocity.y > 0:
 		velocity.y += appliedValues.deceleration * delta
 
-## Jump and gravity. Called in physics process. Moved outside to make reading easier.
-func _jump_and_gravity() -> void:
+func _gravity() -> void:
 	if velocity.y > 0:
 		appliedValues.gravity = gravityScale * descendingGravityFactor
 	else:
@@ -364,6 +378,10 @@ func _jump_and_gravity() -> void:
 			velocity.y += appliedValues.gravity
 		elif velocity.y > appliedValues.terminalVelocity:
 				velocity.y = appliedValues.terminalVelocity
+
+## Jump and gravity. Called in physics process. Moved outside to make reading easier.
+func _jump_and_gravity() -> void:
+	_gravity()
 	if shortHopMultiplier < 1 and commandInputs.jump.release and velocity.y < 0:
 		velocity.y *= shortHopMultiplier
 	for movement in specialMovements:
@@ -373,7 +391,7 @@ func _jump_and_gravity() -> void:
 		if not is_on_floor() and not is_on_wall():
 			if coyoteTime > 0:
 				_coyote_time()
-		if commandInputs.jump.hold and not is_on_wall():
+		if commandInputs.jump.tap and not is_on_wall():
 			if appliedValues.coyoteActive:
 				appliedValues.coyoteActive = false
 				_jump()
@@ -382,7 +400,7 @@ func _jump_and_gravity() -> void:
 				_set_after_time("appliedValues/jumpWasPressed", false, jumpBuffering)
 			elif jumpBuffering == 0 and coyoteTime == 0 and is_on_floor():
 				_jump()
-		elif commandInputs.jump.hold and is_on_floor():
+		elif commandInputs.jump.tap and is_on_floor():
 			_jump()
 		if is_on_floor():
 			appliedValues.jumpCount = jumps
@@ -392,14 +410,25 @@ func _jump_and_gravity() -> void:
 	elif jumps > 1:
 		if is_on_floor():
 			appliedValues.jumpCount = jumps
-		if commandInputs.jump.hold and appliedValues.jumpCount > 0 and not is_on_wall():
+		if commandInputs.jump.tap and appliedValues.jumpCount > 0 and not is_on_wall():
 			velocity.y = -appliedValues.jumpMagnitude
 			appliedValues.jumpCount -= 1
 			appliedValues.terminalVelocity = terminalVelocity
 			appliedValues.gravityActive = true
 
+var do_forwardknock := false
 var do_knock := false
 var ktw : Tween
+func _forwardknock() -> void:
+	if do_forwardknock: do_forwardknock = false
+	else: return
+	if ktw: ktw.kill()
+	ktw = create_tween()
+	var kmod := 0.0
+	if playerSprite.flip_h: kmod = -16.0
+	else: kmod = 16.0
+	ktw.tween_property(self,"global_position:x",global_position.x + kmod,0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+
 func _knockback() -> void:
 	if do_knock: do_knock = false
 	else: return
@@ -412,9 +441,9 @@ func _knockback() -> void:
 
 ## The actual jump.
 signal jump_performed
-func _jump() -> void:
+func _jump(unconditional := false) -> void:
 	if _check_block("jump"): return
-	if appliedValues.jumpCount > 0:
+	if appliedValues.jumpCount > 0 or unconditional:
 		jump_performed.emit()
 		velocity.y = -appliedValues.jumpMagnitude
 		appliedValues.jumpCount += -1
@@ -454,6 +483,7 @@ func animation_flip_check() -> void:
 		appliedValues.isFlipped = true
 	if not animationCustomFlip:
 		playerSprite.flip_h = not appliedValues.animFlip if appliedValues.isFlipped else appliedValues.animFlip
+		#if playerSprite.animation == "latch": playerSprite.flip_h = !playerSprite.flip_h
 
 ## Checks to play walk and run animations.
 func walk_run_animation() -> void:
@@ -467,7 +497,7 @@ func walk_run_animation() -> void:
 			play_animation("idle")
 
 ## Restores speed scale and plays animation.
-func play_animation(animationName: StringName, speed: float = 1) -> void:
+func play_animation(animationName: StringName, speed: float = 1, reverse := false) -> void:
 	playerSprite.speed_scale = speed
 	if animationCustomFlip:
 		if appliedValues.isFlipped:
@@ -476,13 +506,14 @@ func play_animation(animationName: StringName, speed: float = 1) -> void:
 			animationName += "_r"
 	if animationName in animations.keys():
 		if playerSprite.animation != animations[animationName]:
-			playerSprite.play(animations[animationName])
+			playerSprite.play(animations[animationName],1.0,reverse)
 	elif playerSprite.sprite_frames.has_animation(animationName): 
 		#print("hi")
-		playerSprite.play(animationName)
+		playerSprite.play(animationName,1.0,reverse)
 
 var atk_combo := 0
 var atk_combo_timer : SceneTreeTimer
+var atk_combo_buffer := false
 const atk_combo_lapse := 0.55
 signal atk_finisher
 func play_attack_animation():
@@ -492,11 +523,6 @@ func play_attack_animation():
 		#print("combo! ",atk_combo)
 		atk_combo += 1
 	match atk_combo:
-		0:
-			playerSprite.play("attack")
-			await playerSprite.animation_finished
-			atk_combo_timer = get_tree().create_timer(atk_combo_lapse)
-			atk_combo_timer.timeout.connect(combo_reset)
 		1:
 			playerSprite.play("attack_b")
 			await playerSprite.animation_finished
@@ -506,13 +532,19 @@ func play_attack_animation():
 		2:
 			playerSprite.play("attack_c")
 			await playerSprite.frame_changed
-			do_knock = true
+			atk_combo_buffer = false
 			atk_finisher.emit()
+			do_forwardknock = true
 			await playerSprite.animation_finished
 			#combo_reset()
 			#if atk_combo_timer: atk_combo_timer.timeout.disconnect(combo_reset)
 			#atk_combo_timer = get_tree().create_timer(atk_combo_lapse * 0.7)
 			#atk_combo_timer.timeout.connect(combo_reset)
+		_:
+			playerSprite.play("attack")
+			await playerSprite.animation_finished
+			atk_combo_timer = get_tree().create_timer(atk_combo_lapse)
+			atk_combo_timer.timeout.connect(combo_reset)
 
 func combo_reset():
 		atk_combo = 0

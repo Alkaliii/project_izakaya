@@ -30,6 +30,8 @@ func on_detect(state: bool,t : Hitbox2D.tags):
 	if t == Hitbox2D.tags.PLAYER and state and current_state != s.STUN:
 		#print("STUNNED")
 		current_state = s.STUN
+		Dungeon.fairy_countdown.emit(-1)
+		htime = 0.0
 		as2d.play("hurt")
 		var knockback := (global_position - player.global_position) * 10.0
 		knockback.y = knockback.y / 3.0
@@ -45,6 +47,7 @@ func on_detect(state: bool,t : Hitbox2D.tags):
 
 var follow_pos := Vector2.ZERO
 func _physics_process(delta : float):
+	heal(delta)
 	if player:
 		#follow_pos := player.global_position + (Vector2.UP * 16.0)
 		#if player.playerSprite.flip_h: follow_pos = follow_pos.lerp(player.global_position + (Vector2(-1.0,1.0) * -16.0),8.0 * delta)
@@ -60,6 +63,53 @@ func _physics_process(delta : float):
 	velocity = lerp(velocity,Vector2.ZERO,0.5 * delta)
 	move_and_slide()
 	#global_position = global_position.round()
+
+var htime := 0.0
+const heal_thresh := 1.5
+var heal_cooldown : SceneTreeTimer
+@onready var sparkles : CPUParticles2D = $FairyHeal/Sparkles
+@onready var sparkles_explode : CPUParticles2D = $FairyHeal/SparklesExplode
+@onready var heal_shockwave = $FairyHeal/HealShockwave
+func heal(delta : float):
+	if !player: return
+	if heal_cooldown: 
+		if heal_cooldown.time_left == 0.0: heal_cooldown = null
+		return
+	var out_of_range := (global_position - player.global_position).length() > follow_dist
+	if current_state == s.FOLLOW and !out_of_range and player.health < 3.0:
+		htime += delta
+		sparkles.emitting = true
+		Dungeon.fairy_countdown.emit(
+			3 - clampi(int((htime / heal_thresh) * 3.0),0,3)
+		)
+		if htime >= heal_thresh:
+			htime = 0.0
+			heal_cooldown = get_tree().create_timer(2.5)
+			current_state = s.BUFF
+			as2d.play("buff")
+			await as2d.animation_finished
+			var tw = get_tree().create_tween()
+			tw.tween_property(heal_shockwave.material,"shader_parameter/progress",1.0,0.5).from(0.0).set_ease(Tween.EASE_IN_OUT)
+			tw.parallel().tween_callback(sparkles_explode.restart)
+			tw.tween_callback(func(): 
+				sparkles.emitting = false
+				Dungeon.fairy_countdown.emit(-1)
+			)
+			await tw.finished
+			as2d.play("fly")
+			if current_state != s.BUFF or (global_position - player.global_position).length() > follow_dist:
+				#don't heal
+				if current_state != s.STUN: current_state = s.FOLLOW
+				pass
+			else: 
+				#heal
+				player.health += 1
+				current_state = s.FOLLOW
+			#await heal_cooldown.timeout
+	else: 
+		htime = 0.0
+		sparkles.emitting = false
+		Dungeon.fairy_countdown.emit(-1)
 
 func set_follow_pos(delta : float):
 	var new_follow_pos : Vector2 = Vector2.ZERO

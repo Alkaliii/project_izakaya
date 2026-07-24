@@ -115,7 +115,7 @@ func _wall_jump() -> void:
 	var verticalWallKick = abs(parent.appliedValues.jumpMagnitude * sin(wallKickAngle * (PI / 180)))
 	_set_after_time("canLatch", true, inputPauseAfterWallJump, false)
 	isOnWall = false
-	parent.position.x -= 10 * 1 if parent.appliedValues.wasMovingR else 1
+	parent.position.x -= 5 * 1 if parent.appliedValues.wasMovingR else -5
 	_is_latched()
 	parent.velocity.y = -verticalWallKick
 	var right: float = -1 if parent.appliedValues.wasMovingR else 1

@@ -2,8 +2,9 @@
 
 [ext_resource type="Script" uid="uid://b7fmu2yoo286n" path="res://src/schema/fairy_controller.gd" id="1_osd1p"]
 [ext_resource type="Shader" uid="uid://c3epg5t7vexup" path="res://assets/shaders/bounce2D.gdshader" id="2_acjdh"]
-[ext_resource type="Texture2D" uid="uid://dcfk1jgcf6iih" path="res://assets/fairy-sprite-sheet-01.png" id="3_tefb0"]
-[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/hurtbox.gd" id="4_6hghg"]
+[ext_resource type="Texture2D" uid="uid://dcfk1jgcf6iih" path="res://assets/artwork/fairy-sprite-sheet-01.png" id="3_tefb0"]
+[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/schema/hurtbox.gd" id="4_6hghg"]
+[ext_resource type="Shader" uid="uid://dfu4tdh7rg5o7" path="res://assets/shaders/ProceduralFxA2D.gdshader" id="6_tefb0"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rx1b3"]
 shader = ExtResource("2_acjdh")
@@ -119,6 +120,280 @@ size = Vector2(16, 16)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_5d40o"]
 size = Vector2(12, 12)
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2dr56"]
+shader = ExtResource("6_tefb0")
+shader_parameter/texture_size = Vector2(1, 1)
+shader_parameter/progress = 0.0
+shader_parameter/derive_progress = 2
+shader_parameter/ease_progress = 2
+shader_parameter/time_scale = 1.0
+shader_parameter/ping_pong = 1
+shader_parameter/shape_morph = Vector2(0, 0)
+shader_parameter/shp_glb_translate = Vector4(0, 0, 0, 0)
+shader_parameter/shp_glb_rotate = Vector2(0, 0)
+shader_parameter/shp_glb_scale = Vector4(2, 2, 1.4, 1.4)
+shader_parameter/shape_energy = Vector2(1, 1)
+shader_parameter/shape_morph_driver = 0
+shader_parameter/shp_glb_trans_driver = 0
+shader_parameter/shp_glb_rot_driver = 0
+shader_parameter/shp_glb_scl_driver = 5
+shader_parameter/shp_energy_driver = 0
+shader_parameter/shapei = 7
+shader_parameter/shape_sizei = Vector2(0.25, 0.25)
+shader_parameter/shape_sizeib = Vector2(1.2, 0.6)
+shader_parameter/shape_sidesi = 4
+shader_parameter/shape_thicki = Vector2(0.1, 0.1)
+shader_parameter/shape_extrai = Vector4(0.1, 0.1, 0.1, 0.1)
+shader_parameter/shape_sri = Vector3(1, 1, 0)
+shader_parameter/shape_szi_driver = 0
+shader_parameter/shape_szib_driver = 6
+shader_parameter/shape_thicki_driver = 0
+shader_parameter/shape_extrai_driver = 0
+shader_parameter/shapef = 0
+shader_parameter/shape_sizef = Vector2(0.25, 0.25)
+shader_parameter/shape_sizefb = Vector2(0.25, 0.25)
+shader_parameter/shape_sidesf = 4
+shader_parameter/shape_thickf = Vector2(0.1, 0.1)
+shader_parameter/shape_extraf = Vector4(0.1, 0.1, 0.1, 0.1)
+shader_parameter/shape_srf = Vector3(1, 1, 0)
+shader_parameter/shape_szf_driver = 0
+shader_parameter/shape_szfb_driver = 0
+shader_parameter/shape_thickf_driver = 0
+shader_parameter/shape_extraf_driver = 0
+shader_parameter/apply_overlap = 0
+shader_parameter/overlap_percent = Vector2(0.5, 0.5)
+shader_parameter/overlap_offset = Vector4(0, 0, 0, 0)
+shader_parameter/overlap_feather = Vector2(0, 0)
+shader_parameter/overlap_percent_driver = 0
+shader_parameter/overlap_offset_driver = 0
+shader_parameter/overlap_feather_driver = 0
+shader_parameter/shape_feather = Vector2(0, 0)
+shader_parameter/feather_falloff = 0
+shader_parameter/feather_falloff_control = Vector3(0.5, 0.5, 0.5)
+shader_parameter/shape_feather_driver = 0
+shader_parameter/shape_rounding = Vector2(0, 0)
+shader_parameter/apply_onion = 0
+shader_parameter/shape_onion = Vector2(0, 0)
+shader_parameter/shape_rounding_driver = 0
+shader_parameter/shape_onion_driver = 0
+shader_parameter/wobble_freq_amp = Vector4(0, 0, 0, 0)
+shader_parameter/wobble_rot = Vector2(0, 0)
+shader_parameter/wfa_driver = 0
+shader_parameter/wrot_driver = 0
+shader_parameter/twist_type = 0
+shader_parameter/shape_twist = Vector2(0, 0)
+shader_parameter/distortion_factor_twist = false
+shader_parameter/mask_factor_twist = false
+shader_parameter/shape_twist_driver = 0
+shader_parameter/shp_scale_anim = 0
+shader_parameter/shp_scale_anim_driver = 2
+shader_parameter/apply_distortion = 0
+shader_parameter/distort_str = Vector2(0.3, 0.3)
+shader_parameter/scroll_distortion = Vector4(0, 0, 0, 0)
+shader_parameter/scale_distortion = Vector4(1, 1, 1, 1)
+shader_parameter/polarize_distortion = Vector4(0.5, 0.5, 0.6, 0)
+shader_parameter/distort_str_driver = 0
+shader_parameter/distort_scroll_driver = 0
+shader_parameter/floor_distort_scroll = 0.0
+shader_parameter/distort_scale_driver = 0
+shader_parameter/apply_dist_mask = 0
+shader_parameter/dist_mask_power = 2.0
+shader_parameter/distmask_edge = Vector2(0, 1)
+shader_parameter/fisheye_str = Vector2(0, 0)
+shader_parameter/fisheye_offset = Vector4(0, 0, 0, 0)
+shader_parameter/fisheye_str_driver = 0
+shader_parameter/fisheye_offset_driver = 0
+shader_parameter/use_simple_mask = 0
+shader_parameter/simple_mask_power = 2.0
+shader_parameter/simplem_edge = Vector2(0, 1)
+shader_parameter/simple_only_alpha = true
+shader_parameter/emission_intensity = 1.0
+shader_parameter/tweak_alpha = 1.0
+shader_parameter/step_alpha = 1.0
+shader_parameter/apply_rainbow = 0
+shader_parameter/rainbow_str = 1.0
+shader_parameter/r_time_scale = 1.0
+shader_parameter/r_sin_frequency = 0.5
+shader_parameter/r_sin_offset = 0.0
+shader_parameter/r_light_offset = 0.5
+shader_parameter/rainbow_bias = 0
+shader_parameter/rbias_edge = Vector2(0, 1)
+shader_parameter/rescale_vertex = Vector2(1, 1)
+shader_parameter/mesh_offset = Vector2(0, 0)
+shader_parameter/final_mesh_offset = Vector2(0, 0)
+shader_parameter/mesh_offset_driver = 0
+shader_parameter/index_rand_mesh_rot = 0.0
+shader_parameter/maintain_irm_domain = false
+shader_parameter/mesh_rotation = 0.0
+shader_parameter/animate_mesh_rotation = 0.0
+shader_parameter/animate_mesh_rot_with = 0
+shader_parameter/cull_backface = false
+shader_parameter/fov = 1.0
+shader_parameter/rot_y_deg = 0.0
+shader_parameter/rot_x_deg = 0.0
+shader_parameter/inset = 0.0
+shader_parameter/randomness = 0
+shader_parameter/randomness_seed = 0
+shader_parameter/index_shift_randomness = 0
+shader_parameter/custom_index = 0
+
+[sub_resource type="Gradient" id="Gradient_tefb0"]
+offsets = PackedFloat32Array(1)
+colors = PackedColorArray(1, 1, 1, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_l06g0"]
+gradient = SubResource("Gradient_tefb0")
+width = 6
+height = 6
+
+[sub_resource type="Curve" id="Curve_lru8j"]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(1, 0), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_tefb0"]
+_limits = [-1.0, 1.0, 0.0, 1.0]
+_data = [Vector2(0, 1), 0.0, 0.0, 0, 0, Vector2(0.25, -1), 0.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_6hghg"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(0.125, 1), 9.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="Curve" id="Curve_rr2gq"]
+_data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 1.0, 0.0, 0, 0]
+point_count = 2
+
+[sub_resource type="CurveTexture" id="CurveTexture_wcd5e"]
+curve = SubResource("Curve_rr2gq")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_pdl27"]
+noise_type = 2
+frequency = 0.02
+fractal_type = 0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_2dr56"]
+noise = SubResource("FastNoiseLite_pdl27")
+seamless = true
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l06g0"]
+shader = ExtResource("6_tefb0")
+shader_parameter/texture_size = Vector2(1, 1)
+shader_parameter/progress = 0.0
+shader_parameter/derive_progress = 1
+shader_parameter/ease_progress = 2
+shader_parameter/time_scale = 1.0
+shader_parameter/ping_pong = 0
+shader_parameter/shape_morph = Vector2(0, 0)
+shader_parameter/shp_glb_translate = Vector4(0, 0, 0, 0)
+shader_parameter/shp_glb_rotate = Vector2(0, 0)
+shader_parameter/shp_glb_scale = Vector4(1.8, 1.8, 1, 1)
+shader_parameter/shape_energy = Vector2(1, 1)
+shader_parameter/shape_morph_driver = 0
+shader_parameter/shp_glb_trans_driver = 0
+shader_parameter/shp_glb_rot_driver = 0
+shader_parameter/shp_glb_scl_driver = 0
+shader_parameter/shp_energy_driver = 0
+shader_parameter/shapei = 0
+shader_parameter/shape_sizei = Vector2(0, 0.25)
+shader_parameter/shape_sizeib = Vector2(0.25, 0.25)
+shader_parameter/shape_sidesi = 4
+shader_parameter/shape_thicki = Vector2(0.1, 0.1)
+shader_parameter/shape_extrai = Vector4(0.1, 0.1, 0.1, 0.1)
+shader_parameter/shape_sri = Vector3(1, 1, 0)
+shader_parameter/shape_szi_driver = 4
+shader_parameter/shape_szib_driver = 0
+shader_parameter/shape_thicki_driver = 0
+shader_parameter/shape_extrai_driver = 0
+shader_parameter/shapef = 0
+shader_parameter/shape_sizef = Vector2(0.25, 0.25)
+shader_parameter/shape_sizefb = Vector2(0.25, 0.25)
+shader_parameter/shape_sidesf = 4
+shader_parameter/shape_thickf = Vector2(0.1, 0.1)
+shader_parameter/shape_extraf = Vector4(0.1, 0.1, 0.1, 0.1)
+shader_parameter/shape_srf = Vector3(1, 1, 0)
+shader_parameter/shape_szf_driver = 0
+shader_parameter/shape_szfb_driver = 0
+shader_parameter/shape_thickf_driver = 0
+shader_parameter/shape_extraf_driver = 0
+shader_parameter/apply_overlap = 2
+shader_parameter/overlap_percent = Vector2(0, 1)
+shader_parameter/overlap_offset = Vector4(0, 0, 0, 0)
+shader_parameter/overlap_feather = Vector2(0.5, 0)
+shader_parameter/overlap_percent_driver = 7
+shader_parameter/overlap_offset_driver = 0
+shader_parameter/overlap_feather_driver = 0
+shader_parameter/shape_feather = Vector2(0.5, 0)
+shader_parameter/feather_falloff = 1
+shader_parameter/feather_falloff_control = Vector3(0.5, 0.5, 0.5)
+shader_parameter/shape_feather_driver = 0
+shader_parameter/shape_rounding = Vector2(0, 0)
+shader_parameter/apply_onion = 0
+shader_parameter/shape_onion = Vector2(0, 0)
+shader_parameter/shape_rounding_driver = 0
+shader_parameter/shape_onion_driver = 0
+shader_parameter/wobble_freq_amp = Vector4(0, 0, 0, 0)
+shader_parameter/wobble_rot = Vector2(0, 0)
+shader_parameter/wfa_driver = 0
+shader_parameter/wrot_driver = 0
+shader_parameter/twist_type = 0
+shader_parameter/shape_twist = Vector2(0, 0)
+shader_parameter/distortion_factor_twist = false
+shader_parameter/mask_factor_twist = false
+shader_parameter/shape_twist_driver = 0
+shader_parameter/shp_scale_anim = 0
+shader_parameter/shp_scale_anim_driver = 2
+shader_parameter/apply_distortion = 1
+shader_parameter/distort_texture = SubResource("NoiseTexture2D_2dr56")
+shader_parameter/distort_str = Vector2(0.3, 0.3)
+shader_parameter/scroll_distortion = Vector4(0.5, 0, 0, 0)
+shader_parameter/scale_distortion = Vector4(1, 1, 1, 1)
+shader_parameter/polarize_distortion = Vector4(0.5, 0.5, 0.6, 1)
+shader_parameter/distort_str_driver = 0
+shader_parameter/distort_scroll_driver = 2
+shader_parameter/floor_distort_scroll = 0.0
+shader_parameter/distort_scale_driver = 0
+shader_parameter/apply_dist_mask = 0
+shader_parameter/dist_mask_power = 2.0
+shader_parameter/distmask_edge = Vector2(0, 1)
+shader_parameter/fisheye_str = Vector2(0, 0)
+shader_parameter/fisheye_offset = Vector4(0, 0, 0, 0)
+shader_parameter/fisheye_str_driver = 0
+shader_parameter/fisheye_offset_driver = 0
+shader_parameter/use_simple_mask = 9
+shader_parameter/simple_mask_power = 3.0
+shader_parameter/simplem_edge = Vector2(-0.5, 1)
+shader_parameter/simple_only_alpha = true
+shader_parameter/emission_intensity = 5.000000074506
+shader_parameter/tweak_alpha = 15.0
+shader_parameter/step_alpha = 1.0
+shader_parameter/apply_rainbow = 0
+shader_parameter/rainbow_str = 1.0
+shader_parameter/r_time_scale = 1.0
+shader_parameter/r_sin_frequency = 0.5
+shader_parameter/r_sin_offset = 0.0
+shader_parameter/r_light_offset = 0.5
+shader_parameter/rainbow_bias = 0
+shader_parameter/rbias_edge = Vector2(0, 1)
+shader_parameter/rescale_vertex = Vector2(1, 1)
+shader_parameter/mesh_offset = Vector2(0, 0)
+shader_parameter/final_mesh_offset = Vector2(0, 0)
+shader_parameter/mesh_offset_driver = 0
+shader_parameter/index_rand_mesh_rot = 0.0
+shader_parameter/maintain_irm_domain = false
+shader_parameter/mesh_rotation = 0.0
+shader_parameter/animate_mesh_rotation = 0.0
+shader_parameter/animate_mesh_rot_with = 0
+shader_parameter/cull_backface = false
+shader_parameter/fov = 1.0
+shader_parameter/rot_y_deg = 0.0
+shader_parameter/rot_x_deg = 0.0
+shader_parameter/inset = 0.0
+shader_parameter/custom_a = SubResource("CurveTexture_wcd5e")
+shader_parameter/randomness = 0
+shader_parameter/randomness_seed = 0
+shader_parameter/index_shift_randomness = 0
+shader_parameter/custom_index = 0
+
 [node name="Fairy" type="CharacterBody2D" unique_id=750345321]
 collision_layer = 16
 script = ExtResource("1_osd1p")
@@ -142,3 +417,56 @@ metadata/_custom_type_script = "uid://bmr2kt3egosib"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="FairyDetect" unique_id=66623011]
 shape = SubResource("RectangleShape2D_5d40o")
 debug_color = Color(0, 1, 0, 0.41960785)
+
+[node name="FairyHeal" type="Node2D" parent="." unique_id=77951024]
+show_behind_parent = true
+
+[node name="Sparkles" type="CPUParticles2D" parent="FairyHeal" unique_id=302949833]
+material = SubResource("ShaderMaterial_2dr56")
+position = Vector2(0, 4)
+amount = 4
+texture = SubResource("GradientTexture2D_l06g0")
+emission_shape = 3
+emission_rect_extents = Vector2(8, 4)
+direction = Vector2(0, -1)
+spread = 0.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 25.0
+initial_velocity_max = 25.0
+scale_amount_curve = SubResource("Curve_lru8j")
+
+[node name="SparklesExplode" type="CPUParticles2D" parent="FairyHeal" unique_id=951939438]
+material = SubResource("ShaderMaterial_2dr56")
+emitting = false
+amount = 16
+texture = SubResource("GradientTexture2D_l06g0")
+one_shot = true
+explosiveness = 0.95
+direction = Vector2(0, -1)
+spread = 180.0
+gravity = Vector2(0, 0)
+initial_velocity_min = 90.0
+initial_velocity_max = 100.0
+radial_accel_min = 20.0
+radial_accel_max = 20.0
+radial_accel_curve = SubResource("Curve_tefb0")
+damping_min = 200.0
+damping_max = 200.0
+damping_curve = SubResource("Curve_6hghg")
+scale_amount_curve = SubResource("Curve_lru8j")
+
+[node name="HealShockwave" type="ColorRect" parent="FairyHeal" unique_id=877377269]
+material = SubResource("ShaderMaterial_l06g0")
+custom_minimum_size = Vector2(60, 60)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -30.0
+offset_top = -30.0
+offset_right = 30.0
+offset_bottom = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.3882353, 0.60784316, 1, 1)
