@@ -47,8 +47,8 @@ var lastDashDirection: Vector2
 ## Current consecutive jumps.
 var jumpCount: int = consecutiveJumps + 1
 
-func _get_property_list() -> Array:
-	var properties: Array = []
+func _get_property_list() -> Array[Dictionary]:
+	var properties: Array[Dictionary] = []
 	if allowJump:
 		properties.append({
 			"name": "consecutiveJumps",

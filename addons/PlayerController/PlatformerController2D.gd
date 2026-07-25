@@ -6,6 +6,10 @@ class_name PlatformerController2D
 var health : int = 2 : 
 	set(nv):
 		health = clampi(nv,0,3)
+var level : int = 1 :
+	set(nv):
+		level = clampi(nv,0,10)
+var exp : int = 0
 var disabled := false
 var stunned := false
 
@@ -69,6 +73,9 @@ var stunned := false
 					movement.changed.connect(notify_property_list_changed)
 		notify_property_list_changed()
 
+@export_group("Other")
+@export var player_ui : CanvasLayer
+
 ## Applied Values.
 var appliedValues: PlatformerController2DAppliedValues
 ## Special movements flags. Used for when a special movement needs to check for another special movement.
@@ -126,8 +133,8 @@ func _property_get_revert(property: StringName):
 	return null
 
 ## Populates editor.
-func _get_property_list() -> Array:
-	var properties: Array = []
+func _get_property_list() -> Array[Dictionary]:
+	var properties: Array[Dictionary] = []
 	properties.append({
 		"name": "Input",
 		"type": TYPE_NIL,
@@ -212,6 +219,7 @@ func _correct_animations(animationList: PackedStringArray):
 ## Runs when the scene is loaded.
 func _ready() -> void:
 	if Engine.is_editor_hint():
+		if player_ui: player_ui.visible = self == get_tree().current_scene
 		return
 	_setup_keys()
 	_updateData()
@@ -428,6 +436,7 @@ func _forwardknock() -> void:
 	if playerSprite.flip_h: kmod = -16.0
 	else: kmod = 16.0
 	ktw.tween_property(self,"global_position:x",global_position.x + kmod,0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	ktw.tween_property(self,"global_position:x",global_position.x,0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
 
 func _knockback() -> void:
 	if do_knock: do_knock = false
@@ -525,12 +534,14 @@ func play_attack_animation():
 	match atk_combo:
 		1:
 			playerSprite.play("attack_b")
+			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.7,0.9)})
 			await playerSprite.animation_finished
 			if atk_combo_timer: atk_combo_timer.timeout.disconnect(combo_reset)
 			atk_combo_timer = get_tree().create_timer(atk_combo_lapse * 0.8)
 			atk_combo_timer.timeout.connect(combo_reset)
 		2:
 			playerSprite.play("attack_c")
+			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.45,0.5)})
 			await playerSprite.frame_changed
 			atk_combo_buffer = false
 			atk_finisher.emit()
@@ -542,6 +553,7 @@ func play_attack_animation():
 			#atk_combo_timer.timeout.connect(combo_reset)
 		_:
 			playerSprite.play("attack")
+			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.9,1.2)})
 			await playerSprite.animation_finished
 			atk_combo_timer = get_tree().create_timer(atk_combo_lapse)
 			atk_combo_timer.timeout.connect(combo_reset)

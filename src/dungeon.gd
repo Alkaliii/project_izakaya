@@ -4,12 +4,42 @@ extends Node
 static var AM : AudioManager
 
 signal fairy_countdown(time_left : int)
+var accumulated_exp : int = 0
 
 func _ready():
 	var newam := AudioManager.new()
 	add_child(newam)
 	AM = newam
 	AM.play_music(await Symphony.get_music(Symphony.BGM.GRAVEYARD))
+	#print("Total to max level: ",get_total_exp())
+
+func add_exp(gexp : int): accumulated_exp += gexp
+
+const xpa : float = 0.1
+const xpb : float = 1.9515
+const xpc : float = 19.5
+func get_level() -> int:
+	var needed_exp : int = 0
+	for lvl in 11:
+		needed_exp += get_needed(lvl)
+		if accumulated_exp > needed_exp: continue
+		return lvl
+	return 10
+
+func get_needed(lvl : int) -> int: return int(ceilf(xpa * (pow(xpb,float(lvl))) + xpc))
+
+func get_total_exp() -> int:
+	var total_exp : int = 0
+	for lvl in 11: total_exp += get_needed(lvl)
+	return total_exp
+
+const FLOAT_TEXT = preload("uid://c03wirrsk64x3")
+func spawn_ft(pos : Vector2, txt : String, hold := 3.0):
+	var new : FloatingText2D = FLOAT_TEXT.instantiate()
+	new.hold_time = hold
+	add_child(new)
+	new.global_position = pos
+	new.set_ft(txt)
 
 func time_delay(t : float, process_always : bool = true,process_in_physics : bool = false,ignore_time_scale : bool = false):
 	await get_tree().create_timer(t,process_always,process_in_physics,ignore_time_scale).timeout

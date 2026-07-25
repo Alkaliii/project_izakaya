@@ -17,14 +17,12 @@ func _on_update() -> void:
 	pass
 
 ## Animation check function. If you need to change animations do it here mainly.
+#var anim_playing := false
 func _animation_check() -> void:
 	if _get_special_flag("climbing_ladder") and parent.commandInputs.up.hold:
-		#if parent.playerSprite.animation != "climbing": 
-		if !parent.playerSprite.is_playing(): 
-			parent.playerSprite.play("climbing")
 		parent.play_animation("climbing")
-	elif _get_special_flag("climbing_ladder"): 
-		parent.playerSprite.pause()
+	elif _get_special_flag("climbing_ladder") and !parent.commandInputs.up.hold: 
+		parent.play_animation("climbing",0.0)
 
 ## Special gravity function. Apply any needed changes to the gravity here. parent.appliedValues.gravity and parent.appliedValues.terminalVelocity changes go here.
 func _gravity() -> void:
@@ -40,9 +38,10 @@ func _movement_check() -> void:
 		_set_special_flag("climbing_ladder",false)
 		return
 	if parent.commandInputs.up.hold and _get_special_flag("near_ladder"):
+		if _get_special_flag("attacking"): return
 		#print("climbs")
-		_set_special_flag("climbing_ladder",true,["moveAnimation","move"])
-		parent.play_animation("climbing")
+		_set_special_flag("climbing_ladder",true,["jumpAnimation","moveAnimation","move"])
+		#parent.play_animation("climbing")
 	if parent.commandInputs.up.hold and _get_special_flag("climbing_ladder"):
 		parent.velocity.y = -50
 	elif _get_special_flag("climbing_ladder"):

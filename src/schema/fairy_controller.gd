@@ -89,6 +89,7 @@ func heal(delta : float):
 			as2d.play("buff")
 			await as2d.animation_finished
 			var tw = get_tree().create_tween()
+			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.FAIRY_SPELL])
 			tw.tween_property(heal_shockwave.material,"shader_parameter/progress",1.0,0.5).from(0.0).set_ease(Tween.EASE_IN_OUT)
 			tw.parallel().tween_callback(sparkles_explode.restart)
 			tw.tween_callback(func(): 
@@ -105,6 +106,8 @@ func heal(delta : float):
 				#heal
 				player.health += 1
 				current_state = s.FOLLOW
+				Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_HEAL],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2)})
+				Dungeon.spawn_ft(player.global_position,str("[wave][color=639bff]+hp"),1.5)
 			#await heal_cooldown.timeout
 	else: 
 		htime = 0.0

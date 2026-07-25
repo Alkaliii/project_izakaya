@@ -7,6 +7,13 @@ uniform float hit_step = 1.0;
 uniform float hit_speed = 16.0;
 uniform bool soft_flash = false;
 uniform float s_flash_speed = 2.0;
+group_uniforms bounce;
+uniform bool do_bounce = false;
+uniform bool do_abs;
+uniform bool do_quantize;
+uniform float quantize_to : hint_range(0, 2, 0.1) = 1;
+uniform vec2 sine_amplitude = vec2(1.0, 0.0);
+uniform vec2 sine_speed = vec2(1.0, 0.0);
 //uniform float dissolve_progress : hint_range(0.0, 1.0, 0.001) = 0.0;
 
 // How jagged each band of melting pixels are
@@ -15,14 +22,25 @@ uniform float s_flash_speed = 2.0;
 // set this to height in cell count (x2) if you're using a sprite sheet
 //uniform float texture_height = 1.0;
 
-float psuedo_rand(float x) {
-	return mod(x * 2048103.0 + cos(x * 1912.0), 1.0);
-}
+//float psuedo_rand(float x) {
+	//return mod(x * 2048103.0 + cos(x * 1912.0), 1.0);
+//}
 
 //uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_nearest;
 
+
 void vertex() {
-	// Called for every vertex the material is visible on.
+	if (do_bounce) {
+		vec2 s = sin(TIME * sine_speed);
+		if (do_abs) {
+			s = abs(s);
+		}
+		VERTEX += s * sine_amplitude;
+		if (do_quantize) {
+			VERTEX = round(VERTEX / quantize_to);
+			VERTEX *= quantize_to;
+		}
+	}
 }
 
 //vec4 melt(vec2 uvm,vec2 tps,sampler2D tex,float progress) {

@@ -10,13 +10,16 @@ extends Node
 @export var airburst_right : CPUParticles2D
 @export_group("UI")
 @export var health_bar : MainHealthBar
+@export var exp_bar : MainHealthBar
 @export var fry_cnt_dwn : RichTextLabel
 
 @export_group("Debug")
 @export var debug_speed : RichTextLabel
 @export var debug_anim : RichTextLabel
+@export var debug_exp : RichTextLabel
 
 func _ready():
+	player_controller.level = Dungeon.get_level()
 	player_controller.add_to_group("player")
 	player_controller.attack.connect(on_attack)
 	player_controller.jump_performed.connect(on_jump)
@@ -37,6 +40,7 @@ func on_detect(s : bool,tag : Hitbox2D.tags):
 		player_controller._knockback()
 		player_controller.play_animation("hurt")
 		player_controller.health -= 1
+		Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2)})
 		player_controller.playerSprite.material.set_shader_parameter("hit",true)
 		await get_tree().create_timer(0.25).timeout
 		player_controller.playerSprite.material.set_shader_parameter("hit",false)
@@ -94,6 +98,7 @@ func _process(delta : float):
 	if on_floor and airborne:
 		airborne = false
 		player_controller.specialMovements[0]._set_special_flag("block_ladder",false)
+		Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_LAND],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2)})
 		if !airburst_left.emitting:
 			airburst_parent.position.y = 9.0
 			airburst_left.restart()
@@ -107,7 +112,8 @@ func _process(delta : float):
 	
 	if Input.is_action_just_pressed("move_up") and !ladder_areas.is_empty():
 		var lxpos := ladder_areas[0].global_position.x
-		create_tween().tween_property(player_controller,"global_position:x",lxpos,0.1).set_ease(Tween.EASE_IN_OUT)
+		if !is_equal_approx(player_controller.global_position.x,lxpos):
+			create_tween().tween_property(player_controller,"global_position:x",lxpos,0.1).set_ease(Tween.EASE_IN_OUT)
 	
 	debug_control()
 	health_bar_management()
@@ -130,11 +136,13 @@ func health_bar_management():
 func debug_control():
 	if debug_speed: debug_speed.text = str("v: ",player_controller.velocity.round())
 	if debug_anim: debug_anim.text = str("a: ",player_controller.playerSprite.animation)
+	if debug_exp: debug_exp.text = "lvl: %s, %s/%s" % [player_controller.level,player_controller.exp,Dungeon.get_needed(player_controller.level + 1)]
 	if Input.is_action_just_pressed("debug_a"): player_controller.health -= 1
 	if Input.is_action_just_pressed("debug_b"): pass
 	if Input.is_action_just_pressed("debug_c"): pass
 
 func on_jump():
+	Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_JUMP],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2)})
 	airburst_parent.position.y = 14.0
 	airburst_left.restart()
 	airburst_right.restart()
@@ -143,6 +151,9 @@ func on_atk_finisher():
 	invulnerable_timer = get_tree().create_timer(0.5)
 	airburst_parent.position.y = 9.0
 	if !player_controller.playerSprite.flip_h: airburst_left.restart()
+	else: airburst_right.restart()
+	await get_tree().create_timer(0.125).timeout
+	if player_controller.playerSprite.flip_h: airburst_left.restart()
 	else: airburst_right.restart()
 
 func on_attack(state : bool):

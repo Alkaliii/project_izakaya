@@ -111,6 +111,7 @@ func _jump_override() -> bool:
 
 ## Wall jumps.
 func _wall_jump() -> void:
+	Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_JUMP],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2)})
 	var horizontalWallKick = abs(parent.appliedValues.jumpMagnitude * cos(wallKickAngle * (PI / 180)))
 	var verticalWallKick = abs(parent.appliedValues.jumpMagnitude * sin(wallKickAngle * (PI / 180)))
 	_set_after_time("canLatch", true, inputPauseAfterWallJump, false)

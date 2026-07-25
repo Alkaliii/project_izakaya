@@ -15,10 +15,24 @@ const BGM_p : Dictionary[BGM,String] = {
 
 enum SFX {
 	NONE,
+	LEVEL_UP,
+	FAIRY_SPELL,
+	ENEMY_HIT,
+	PLAYER_HIT,
+	PLAYER_HEAL,
+	PLAYER_JUMP,
+	PLAYER_LAND,
 }
 
 const SFX_p : Dictionary[SFX,String] = {
 	SFX.NONE:"",
+	SFX.LEVEL_UP:"uid://d071pwi5u3otf",
+	SFX.FAIRY_SPELL:"uid://bxvx07qtw02rp",
+	SFX.ENEMY_HIT:"uid://cxe56n5liemah",
+	SFX.PLAYER_HIT:"uid://c1wmixry68mu0",
+	SFX.PLAYER_HEAL:"uid://xrapl8rdgl8n",
+	SFX.PLAYER_JUMP:"uid://4cn2f21vme1j",
+	SFX.PLAYER_LAND:"uid://drcs41l7hixns",
 }
 
 static func get_music(music : Symphony.BGM) -> AudioStream:
