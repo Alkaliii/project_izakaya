@@ -5,14 +5,17 @@ extends Node2D
 @export var background_color : Color = Color("303c82") : 
 	set(nv):
 		background_color = nv
+		if !Engine.is_editor_hint(): return
 		sky.color = background_color
 @export var disable_fog : bool = false :
 	set(nv):
 		disable_fog = nv
+		if !Engine.is_editor_hint(): return
 		fog.visible = !disable_fog
 @export var background_fog : GradientTexture1D : 
 	set(nv):
 		background_fog = nv
+		if !Engine.is_editor_hint(): return
 		fog.material.set_shader_parameter("color_gardient",background_fog)
 @export var load_default_fog := true
 
