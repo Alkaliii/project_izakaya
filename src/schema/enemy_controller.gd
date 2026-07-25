@@ -1,5 +1,5 @@
 extends CharacterBody2D
-
+class_name BaseEnemy2D
 
 enum t {
 	STILL, #this enemy doesn't move
@@ -17,6 +17,8 @@ enum state {
 @export var enemy_movement : t = t.STILL
 @export var is_flying := false # this enemy is placed in front of the arena, won't collide with obstacles, and can navigate in all four directions
 @export var fly_patrol_distance := 30.0
+@export var chase_engage_distance := 90.0
+@export var still_on_not_chase := false
 @export_group("Attributes")
 @export_range(0,3,1) var max_health : int = 1
 @export var bonus_health : int = 0 #so a boss isn't weak as shit and stronger enemies and stronger player works
@@ -35,6 +37,7 @@ enum state {
 @onready var cdbx : Hitbox2D = $ContactDamage
 @onready var damage_detect : Hurtbox2D = $DamageDetect
 
+signal im_dead
 
 const MOVE_SPEED := 24.0
 var current_state : state = state.NONE
@@ -43,7 +46,9 @@ var current_health := 3 :
 		current_health = max(nv,0)
 
 var patrol_point := Vector2.ZERO
+var player : PlatformerController2D
 func _ready():
+	as2d.modulate.a = 0.0
 	patrol_point = global_position
 	if is_flying: set_flight_position(true)
 	set_flying(is_flying)
@@ -53,6 +58,11 @@ func _ready():
 	
 	if damage_detect: damage_detect.detected.connect(on_detect)
 	if as2d.sprite_frames.has_animation("idle"): as2d.play("idle")
+	await get_tree().process_frame
+	player = get_tree().get_first_node_in_group("player")
+	var tw := create_tween()
+	tw.tween_property(as2d,"modulate:a",1.0,0.25).set_ease(Tween.EASE_IN_OUT).set_delay(0.25)
+	await tw.finished
 	current_state = state.OKAY
 
 func set_contact_damage(s : bool) -> void:
@@ -76,7 +86,8 @@ func set_flying(s : bool) -> void:
 
 #const min_detect_dist := 20
 func on_detect(s : bool,tag : Hitbox2D.tags):
-	var player : PlatformerController2D = get_tree().get_first_node_in_group("player")
+	#var player : PlatformerController2D = get_tree().get_first_node_in_group("player")
+	if !player: return
 	if tag == Hitbox2D.tags.PLAYER and s and current_state == state.OKAY:
 		#if player and (global_position - player.global_position).length() > min_detect_dist: return
 		current_state = state.STUN
@@ -103,12 +114,15 @@ func on_detect(s : bool,tag : Hitbox2D.tags):
 			current_state = state.OKAY
 		else:
 			current_state = state.DEAD
-			player.exp += max_health + bonus_health
+			var earned = max_health + bonus_health
+			if player.health == 1: earned = int(round(float(earned) * 1.5))
+			player.exp += earned
 			Dungeon.spawn_ft(player.global_position,str("[wave][color=639bff]+xp"),1.5)
 			var tw := create_tween()
 			#tw.tween_property(as3d.material,"shader_parameter/dissolve_progress",1.0,0.25).set_ease(Tween.EASE_IN_OUT)
 			tw.tween_property(as2d,"position:y",-12.0,0.25).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
 			tw.parallel().tween_property(as2d,"modulate:a",0.0,0.25).set_ease(Tween.EASE_IN_OUT)
+			tw.tween_callback(func(): im_dead.emit())
 			await tw.finished
 			queue_free()
 			#do something
@@ -132,7 +146,7 @@ func _knockback() -> void:
 	if ktw: ktw.kill()
 	ktw = create_tween()
 	var kmod := 0.0
-	var player : PlatformerController2D = get_tree().get_first_node_in_group("player")
+	#var player : PlatformerController2D = get_tree().get_first_node_in_group("player")
 	if player:
 		if global_position.x < player.global_position.x: kmod = -8.0
 		else: kmod = 8.0
@@ -143,7 +157,8 @@ func _knockback() -> void:
 
 var flight_hold : SceneTreeTimer
 func set_flight_position(unconditional := false):
-	var player : PlatformerController2D = get_tree().get_first_node_in_group("player")
+	#var player : PlatformerController2D = get_tree().get_first_node_in_group("player")
+	if !player: return
 	if (global_position - new_flight_position).length() < 10.0 or unconditional:
 		if !flight_hold and !unconditional:
 			flight_hold = get_tree().create_timer(randf_range(1.5,3.0))
@@ -151,7 +166,7 @@ func set_flight_position(unconditional := false):
 		elif (flight_hold and flight_hold.time_left == 0.0) or unconditional:
 			if (patrol_point - player.global_position).length() < fly_patrol_distance:
 				# fly near player
-				new_flight_position = player.global_position + [get_follow_pos(player),Vector2.ZERO].pick_random()
+				new_flight_position = player.global_position + [get_follow_pos(),Vector2.ZERO].pick_random()
 			else:
 				var new_vec := Vector2.UP * fly_patrol_distance
 				new_vec = new_vec.rotated(randf_range(-TAU,TAU))
@@ -163,7 +178,7 @@ func set_flight_position(unconditional := false):
 				new_flight_position = patrol_point + new_vec
 			flight_hold = null
 
-func get_follow_pos(player : PlatformerController2D) -> Vector2:
+func get_follow_pos() -> Vector2:
 	var new_follow_pos : Vector2 = Vector2.ZERO
 	if player.playerSprite.flip_h: new_follow_pos.x = 32.0 #follow_pos.lerp(player.global_position + (Vector2(-1.0,1.0) * -16.0),8.0 * delta)
 	else: new_follow_pos.x = -32.0
@@ -172,7 +187,51 @@ func get_follow_pos(player : PlatformerController2D) -> Vector2:
 	
 	return new_follow_pos
 
-func process_chase(delta : float): pass
+var chase_cooldown : SceneTreeTimer
+func process_chase(delta : float):
+	var within_range := (player.global_position - global_position).length() < chase_engage_distance
+	if player.disabled: 
+		within_range = false
+		if !chase_cooldown: chase_cooldown = get_tree().create_timer(0.5)
+	if chase_cooldown and chase_cooldown.time_left == 0.0: chase_cooldown = null
+	if is_flying:
+		if within_range and !chase_cooldown:
+			new_flight_position = player.global_position + get_follow_pos()
+			var fspd := clampf((global_position - new_flight_position).length() / 32.0,0.0,0.5) * movement_speed
+			global_position = global_position.lerp(new_flight_position,fspd * delta)
+			as2d.flip_h = global_position.x > new_flight_position.x
+		elif still_on_not_chase: pass
+		else: process_patrol(delta)
+	else:
+		if within_range and !chase_cooldown:
+			if player:
+				var old = as2d.flip_h
+				var new = global_position.x > player.global_position.x
+				if old != new:
+					as2d.flip_h = new
+					chase_cooldown = get_tree().create_timer(1.5)
+					return
+			as2d.speed_scale = 2.0
+			match as2d.flip_h:
+				true when floor_check: floor_check.position.x = -10.0
+				false when floor_check: floor_check.position.x = 10.0
+			var check := true
+			if floor_check: 
+				floor_check.force_raycast_update()
+				check = floor_check.is_colliding()
+			if !check: 
+				#as2d.flip_h = !as2d.flip_h
+				chase_cooldown = get_tree().create_timer(2.0)
+				return
+			if is_zero_approx(velocity.x): as2d.flip_h = !as2d.flip_h
+			velocity.x = -MOVE_SPEED if as2d.flip_h else MOVE_SPEED
+			velocity.x *= movement_speed * 2.0
+		elif still_on_not_chase: 
+			if as2d.speed_scale != 1.0: as2d.speed_scale = 1.0
+			pass
+		else: 
+			if as2d.speed_scale != 1.0: as2d.speed_scale = 1.0
+			process_patrol(delta)
 
 @onready var floor_check : RayCast2D = $floorCheck
 var new_flight_position : Vector2 = Vector2.ZERO

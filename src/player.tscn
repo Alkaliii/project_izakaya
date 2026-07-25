@@ -17,6 +17,9 @@
 [ext_resource type="Texture2D" uid="uid://d3gg4gdb8x7qw" path="res://assets/artwork/some_ui.png" id="13_fxwnc"]
 [ext_resource type="Script" uid="uid://g1ds8v4vjb5k" path="res://src/schema/health_bar.gd" id="14_hc2cd"]
 [ext_resource type="FontFile" uid="uid://3r64nh6riuee" path="res://assets/fonts/pixel_operator/PixelOperatorHB.ttf" id="15_hc2cd"]
+[ext_resource type="Shader" uid="uid://tv1tn3oyf1e2" path="res://assets/shaders/Speedlines2D.gdshader" id="17_aofjl"]
+[ext_resource type="Script" uid="uid://dnqvk0lbjfptg" path="res://src/schema/textbox.gd" id="18_qntp5"]
+[ext_resource type="Shader" uid="uid://c3epg5t7vexup" path="res://assets/shaders/bounce2D.gdshader" id="19_8wfru"]
 
 [sub_resource type="Resource" id="Resource_bvvr5"]
 script = ExtResource("3_ndfpv")
@@ -695,6 +698,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wcd5e"]
 size = Vector2(16, 16)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8wfru"]
+size = Vector2(8, 8)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_muppb"]
 size = Vector2(8, 8)
 
@@ -704,20 +710,23 @@ duration = 0.5
 transition = 10
 ease = 1
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_8wfru"]
+shader = ExtResource("19_8wfru")
+shader_parameter/modulate_on_step = 0
+shader_parameter/modu = Color(1, 1, 1, 1)
+shader_parameter/modu_step = 3.0
+shader_parameter/do_abs = true
+shader_parameter/do_quantize = true
+shader_parameter/quantize_to = 1.0
+shader_parameter/sine_amplitude = Vector2(0, -3)
+shader_parameter/sine_speed = Vector2(0, 4)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_undrb"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(112, 32, 16, 16)
+
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_l06g0"]
 blend_mode = 4
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_atx3q"]
-atlas = ExtResource("13_fxwnc")
-region = Rect2(0, 96, 48, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_l06g0"]
-atlas = ExtResource("13_fxwnc")
-region = Rect2(0, 64, 48, 16)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_d28pn"]
-atlas = ExtResource("13_fxwnc")
-region = Rect2(40, 64, 8, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_2hj6y"]
 atlas = ExtResource("13_fxwnc")
@@ -730,6 +739,18 @@ region = Rect2(48, 80, 48, 8)
 [sub_resource type="AtlasTexture" id="AtlasTexture_2uuf1"]
 atlas = ExtResource("13_fxwnc")
 region = Rect2(88, 80, 8, 8)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_atx3q"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(0, 96, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l06g0"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(0, 64, 48, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d28pn"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(40, 64, 8, 16)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2dr56"]
 
@@ -744,6 +765,25 @@ texture_margin_top = 4.0
 texture_margin_right = 4.0
 texture_margin_bottom = 4.0
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_pdl27"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_2dr56"]
+shader = ExtResource("19_8wfru")
+shader_parameter/modulate_on_step = 2
+shader_parameter/modu = Color(0.85490197, 0.64705884, 0.1254902, 1)
+shader_parameter/modu_step = 3.0
+shader_parameter/do_abs = true
+shader_parameter/do_quantize = true
+shader_parameter/quantize_to = 1.0
+shader_parameter/sine_amplitude = Vector2(0, 3)
+shader_parameter/sine_speed = Vector2(0, 4)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wcd5e"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(96, 16, 8, 8)
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l06g0"]
+
 [sub_resource type="AtlasTexture" id="AtlasTexture_u6c26"]
 atlas = ExtResource("13_fxwnc")
 region = Rect2(0, 0, 48, 16)
@@ -755,6 +795,24 @@ texture_margin_top = 4.0
 texture_margin_right = 4.0
 texture_margin_bottom = 4.0
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_rr2gq"]
+noise_type = 2
+frequency = 0.005
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_wcd5e"]
+noise = SubResource("FastNoiseLite_rr2gq")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_pdl27"]
+shader = ExtResource("17_aofjl")
+shader_parameter/noise = SubResource("NoiseTexture2D_wcd5e")
+shader_parameter/line_color = Color(0.02745098, 0.019607844, 0.10980392, 1)
+shader_parameter/line_count = 2.0
+shader_parameter/line_density = 0.0
+shader_parameter/line_faloff = 0.0010000000475
+shader_parameter/mask_size = 0.1
+shader_parameter/mask_edge = 0.5
+shader_parameter/animation_speed = 2.0000000475
+
 [node name="Player" type="CharacterBody2D" unique_id=1451421413 node_paths=PackedStringArray("playerSprite", "playerCollider", "player_ui")]
 collision_layer = 4
 collision_mask = 2
@@ -763,9 +821,7 @@ playerSprite = NodePath("PlayerSprite")
 playerCollider = NodePath("PlayerCollider")
 inputKeys = {
 "attack": "attack",
-"climb": "move_up",
 "down": "move_down",
-"drop": "move_down",
 "jump": "jump",
 "left": "move_left",
 "right": "move_right",
@@ -796,8 +852,6 @@ inputdown = "move_down"
 inputjump = "jump"
 inputrun = null
 inputattack = "attack"
-inputclimb = "move_up"
-inputdrop = "move_down"
 animationCustomFlip = false
 animationidle = "idle"
 animationwalk = "walk"
@@ -810,7 +864,7 @@ animationslide = "latch"
 animationclimbing = "climbing"
 metadata/_custom_type_script = "uid://r48ickdxd3kr"
 
-[node name="PlayerControllerEx" type="Node" parent="." unique_id=1004097929 node_paths=PackedStringArray("player_controller", "camera", "attack_box", "detect_box", "airburst_parent", "airburst_left", "airburst_right", "health_bar", "fry_cnt_dwn", "debug_speed", "debug_anim", "debug_exp")]
+[node name="PlayerControllerEx" type="Node" parent="." unique_id=1004097929 node_paths=PackedStringArray("player_controller", "camera", "attack_box", "detect_box", "airburst_parent", "airburst_left", "airburst_right", "pcollide", "acl", "acr", "notice_icon", "text_box", "health_bar", "exp_bar", "fry_cnt_dwn", "hurt_emp", "debug_speed", "debug_anim", "debug_exp")]
 script = ExtResource("4_dxtnc")
 player_controller = NodePath("..")
 camera = NodePath("../CameraParent/PhantomCamera2D")
@@ -819,8 +873,15 @@ detect_box = NodePath("../PlayerDetect")
 airburst_parent = NodePath("../DustParticles")
 airburst_left = NodePath("../DustParticles/AirBurstLeft")
 airburst_right = NodePath("../DustParticles/AirBurstRight")
+pcollide = NodePath("../PlayerCollider")
+acl = NodePath("../AntiClip/Left")
+acr = NodePath("../AntiClip/Right")
+notice_icon = NodePath("../InteractionNotice")
+text_box = NodePath("../PlayerUICanvasLayer/pUI/mc/textbox")
 health_bar = NodePath("../PlayerUICanvasLayer/pUI/mc/bars/HealthBar")
+exp_bar = NodePath("../PlayerUICanvasLayer/pUI/mc/bars/EXPBar")
 fry_cnt_dwn = NodePath("../PlayerUICanvasLayer/pUI/cc/fcd")
+hurt_emp = NodePath("../PlayerUICanvasLayer/pUI/HurtEmphasis")
 debug_speed = NodePath("../PlayerUICanvasLayer/debug/VBoxContainer/speed")
 debug_anim = NodePath("../PlayerUICanvasLayer/debug/VBoxContainer/anim")
 debug_exp = NodePath("../PlayerUICanvasLayer/debug/VBoxContainer/exp")
@@ -897,6 +958,17 @@ shape = SubResource("RectangleShape2D_wcd5e")
 disabled = true
 debug_color = Color(1, 0, 0, 0.41960785)
 
+[node name="PlayerPresence" type="Area2D" parent="." unique_id=400479307]
+show_behind_parent = true
+collision_layer = 32
+collision_mask = 64
+script = ExtResource("6_fxwnc")
+box_tag = 6
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerPresence" unique_id=516884976]
+shape = SubResource("RectangleShape2D_8wfru")
+debug_color = Color(0.84313726, 0.8980392, 0.69803923, 0.41960785)
+
 [node name="PlayerDetect" type="Area2D" parent="." unique_id=1603731815]
 collision_layer = 64
 collision_mask = 32
@@ -912,11 +984,13 @@ debug_color = Color(0, 1, 0, 0.41960785)
 top_level = true
 position = Vector2(0, -16)
 script = ExtResource("8_mlfxl")
+priority = 1
 follow_mode = 5
 follow_target = NodePath("..")
 snap_to_pixel = true
 frame_preview = false
 tween_resource = SubResource("Resource_4jusf")
+tween_on_load = false
 follow_offset = Vector2(0, -16)
 follow_damping = true
 lookahead = true
@@ -925,6 +999,24 @@ dead_zone_width = 0.125
 dead_zone_height = 0.5
 draw_limits = true
 metadata/_custom_type_script = "uid://bhexx6mj1xv3q"
+
+[node name="InteractionNotice" type="Sprite2D" parent="." unique_id=2143615074]
+visible = false
+z_index = 2
+material = SubResource("ShaderMaterial_8wfru")
+position = Vector2(0, -10)
+scale = Vector2(0.5, 0.5)
+texture = SubResource("AtlasTexture_undrb")
+
+[node name="AntiClip" type="Node2D" parent="." unique_id=1550156821]
+
+[node name="Left" type="RayCast2D" parent="AntiClip" unique_id=1483621905]
+target_position = Vector2(12, 0)
+collision_mask = 2
+
+[node name="Right" type="RayCast2D" parent="AntiClip" unique_id=1747700465]
+target_position = Vector2(-12, 0)
+collision_mask = 2
 
 [node name="PlayerUICanvasLayer" type="CanvasLayer" parent="." unique_id=1071017687]
 
@@ -1036,6 +1128,31 @@ size_flags_horizontal = 0
 size_flags_vertical = 0
 theme_override_constants/separation = -4
 
+[node name="EXPBar" type="TextureProgressBar" parent="PlayerUICanvasLayer/pUI/mc/bars" unique_id=940959573]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+offset_transform_enabled = true
+max_value = 3.0
+step = 0.1
+value = 1.0
+texture_under = SubResource("AtlasTexture_2hj6y")
+texture_progress = SubResource("AtlasTexture_xmutw")
+script = ExtResource("14_hc2cd")
+disp_min = 0.15
+
+[node name="hbedge" type="TextureRect" parent="PlayerUICanvasLayer/pUI/mc/bars/EXPBar" unique_id=313366157]
+layout_mode = 1
+anchors_preset = 4
+anchor_top = 0.5
+anchor_bottom = 0.5
+offset_left = 9.0
+offset_top = -4.0
+offset_right = 17.000002
+offset_bottom = 4.0
+grow_vertical = 2
+texture = SubResource("AtlasTexture_2uuf1")
+
 [node name="HealthBar" type="TextureProgressBar" parent="PlayerUICanvasLayer/pUI/mc/bars" unique_id=778335484]
 layout_mode = 2
 size_flags_horizontal = 0
@@ -1059,56 +1176,37 @@ offset_bottom = 8.0
 grow_vertical = 2
 texture = SubResource("AtlasTexture_d28pn")
 
-[node name="EXPBar" type="TextureProgressBar" parent="PlayerUICanvasLayer/pUI/mc/bars" unique_id=940959573]
-layout_mode = 2
-size_flags_horizontal = 0
-size_flags_vertical = 0
-offset_transform_enabled = true
-offset_transform_position_ratio = Vector2(0.05, 0)
-max_value = 3.0
-step = 0.1
-value = 1.0
-texture_under = SubResource("AtlasTexture_2hj6y")
-texture_progress = SubResource("AtlasTexture_xmutw")
-script = ExtResource("14_hc2cd")
-
-[node name="hbedge" type="TextureRect" parent="PlayerUICanvasLayer/pUI/mc/bars/EXPBar" unique_id=313366157]
-layout_mode = 1
-anchors_preset = 4
-anchor_top = 0.5
-anchor_bottom = 0.5
-offset_left = 9.0
-offset_top = -4.0
-offset_right = 17.0
-offset_bottom = 4.0
-grow_vertical = 2
-texture = SubResource("AtlasTexture_2uuf1")
-
 [node name="textbox" type="PanelContainer" parent="PlayerUICanvasLayer/pUI/mc" unique_id=1579914018]
 visible = false
+custom_minimum_size = Vector2(184, 0)
+custom_maximum_size = Vector2(184, -1)
 layout_mode = 2
+size_flags_horizontal = 4
 size_flags_vertical = 0
+offset_transform_enabled = true
 theme_override_styles/panel = SubResource("StyleBoxEmpty_2dr56")
+script = ExtResource("18_qntp5")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox" unique_id=1335660108]
+[node name="vbc" type="VBoxContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox" unique_id=1335660108]
 layout_mode = 2
 theme_override_constants/separation = 0
 
-[node name="spacer" type="Control" parent="PlayerUICanvasLayer/pUI/mc/textbox/VBoxContainer" unique_id=142539036]
-layout_mode = 2
-
-[node name="tbx" type="PanelContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/VBoxContainer" unique_id=316207388]
+[node name="tbx" type="PanelContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc" unique_id=316207388]
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxTexture_2dr56")
 
-[node name="mc" type="MarginContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/VBoxContainer/tbx" unique_id=1061441807]
+[node name="mc" type="MarginContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc/tbx" unique_id=1061441807]
 layout_mode = 2
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 4
 theme_override_constants/margin_right = 4
-theme_override_constants/margin_bottom = 4
+theme_override_constants/margin_bottom = 8
 
-[node name="tbxlbl" type="RichTextLabel" parent="PlayerUICanvasLayer/pUI/mc/textbox/VBoxContainer/tbx/mc" unique_id=253384642]
+[node name="hbc" type="PanelContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc/tbx/mc" unique_id=1633819001]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_pdl27")
+
+[node name="tbxlbl" type="RichTextLabel" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc/tbx/mc/hbc" unique_id=253384642]
 clip_contents = false
 layout_mode = 2
 theme_override_colors/default_color = Color(0.60784316, 0.6313726, 0.5764706, 1)
@@ -1119,41 +1217,46 @@ theme_override_font_sizes/bold_italics_font_size = 8
 theme_override_font_sizes/italics_font_size = 8
 theme_override_font_sizes/mono_font_size = 8
 bbcode_enabled = true
-text = "Hello, this is a text box. It is meant two hold to lines of text more or less."
+text = "Hello, this is a text box. It is meant to hold two lines of text... more or less."
 fit_content = true
 scroll_active = false
+visible_characters_behavior = 1
 
-[node name="c" type="Control" parent="PlayerUICanvasLayer/pUI/mc/textbox/VBoxContainer/tbx" unique_id=520219175]
+[node name="continue" type="TextureRect" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc/tbx/mc" unique_id=1528131601]
+material = SubResource("ShaderMaterial_2dr56")
+custom_minimum_size = Vector2(8, 8)
 layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0, 0.5)
+texture = SubResource("AtlasTexture_wcd5e")
+stretch_mode = 3
 
-[node name="nmetag" type="PanelContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/VBoxContainer/tbx/c" unique_id=1788455905]
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -37.0
-offset_top = -16.0
-grow_horizontal = 0
-grow_vertical = 0
-size_flags_horizontal = 0
+[node name="c" type="PanelContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc/tbx" unique_id=1655360958]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxEmpty_l06g0")
+
+[node name="nmetag" type="PanelContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc/tbx/c" unique_id=1788455905]
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
 offset_transform_enabled = true
 offset_transform_position_ratio = Vector2(0, 0.8)
 theme_override_styles/panel = SubResource("StyleBoxTexture_xmutw")
 
-[node name="mc" type="MarginContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/VBoxContainer/tbx/c/nmetag" unique_id=1057502443]
+[node name="mc" type="MarginContainer" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc/tbx/c/nmetag" unique_id=1057502443]
 layout_mode = 2
 theme_override_constants/margin_left = 4
 theme_override_constants/margin_top = 0
 theme_override_constants/margin_right = 4
 theme_override_constants/margin_bottom = 0
 
-[node name="ntglbl" type="RichTextLabel" parent="PlayerUICanvasLayer/pUI/mc/textbox/VBoxContainer/tbx/c/nmetag/mc" unique_id=1216647253]
+[node name="ntglbl" type="RichTextLabel" parent="PlayerUICanvasLayer/pUI/mc/textbox/vbc/tbx/c/nmetag/mc" unique_id=1216647253]
 clip_contents = false
 layout_mode = 2
-theme_override_colors/default_color = Color(0.60784316, 0.6313726, 0.5764706, 1)
-theme_override_colors/font_shadow_color = Color(0.02745098, 0.019607844, 0.10980392, 1)
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.29803923, 0.25882354, 0.21176471, 1)
 theme_override_constants/shadow_offset_x = 0
 theme_override_fonts/normal_font = ExtResource("12_nic3v")
 theme_override_font_sizes/normal_font_size = 8
@@ -1162,8 +1265,28 @@ theme_override_font_sizes/bold_italics_font_size = 8
 theme_override_font_sizes/italics_font_size = 8
 theme_override_font_sizes/mono_font_size = 8
 bbcode_enabled = true
-text = "Name"
+text = "???"
 fit_content = true
 scroll_active = false
 autowrap_mode = 0
 horizontal_alignment = 1
+
+[node name="alert" type="TextureRect" parent="PlayerUICanvasLayer/pUI/mc/textbox" unique_id=805889265]
+material = SubResource("ShaderMaterial_8wfru")
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+offset_transform_enabled = true
+offset_transform_position_ratio = Vector2(0.25, 0)
+texture = SubResource("AtlasTexture_undrb")
+stretch_mode = 3
+
+[node name="HurtEmphasis" type="ColorRect" parent="PlayerUICanvasLayer/pUI" unique_id=324874496]
+material = SubResource("ShaderMaterial_pdl27")
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

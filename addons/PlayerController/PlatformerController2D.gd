@@ -9,7 +9,11 @@ var health : int = 2 :
 var level : int = 1 :
 	set(nv):
 		level = clampi(nv,0,10)
-var exp : int = 0
+var exp : int = 0 : 
+	set(nv):
+		exp = nv
+		exp_changed.emit() 
+signal exp_changed
 var disabled := false
 var stunned := false
 
@@ -224,6 +228,7 @@ func _ready() -> void:
 	_setup_keys()
 	_updateData()
 	playerSprite.animation_changed.connect(fix_frame)
+	playerSprite.frame_changed.connect(fix_frame)
 	#if debugMenuEditor:
 		#_debug_variables()
 
@@ -450,8 +455,11 @@ func _knockback() -> void:
 
 ## The actual jump.
 signal jump_performed
+signal landing_occured
+var just_landed := false
 func _jump(unconditional := false) -> void:
 	if _check_block("jump"): return
+	if commandInputs.down.hold and specialMovements[0]._get_special_flag("can_drop"): return
 	if appliedValues.jumpCount > 0 or unconditional:
 		jump_performed.emit()
 		velocity.y = -appliedValues.jumpMagnitude
@@ -525,6 +533,7 @@ var atk_combo_timer : SceneTreeTimer
 var atk_combo_buffer := false
 const atk_combo_lapse := 0.55
 signal atk_finisher
+var block_attack_sfx := false
 func play_attack_animation():
 	if atk_combo > 2: return
 	if playerSprite.animation in ["attack","attack_b","attack_c"]: return
@@ -534,14 +543,16 @@ func play_attack_animation():
 	match atk_combo:
 		1:
 			playerSprite.play("attack_b")
-			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.7,0.9)})
+			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.7,0.9)})
+			else: block_attack_sfx = false
 			await playerSprite.animation_finished
 			if atk_combo_timer: atk_combo_timer.timeout.disconnect(combo_reset)
 			atk_combo_timer = get_tree().create_timer(atk_combo_lapse * 0.8)
 			atk_combo_timer.timeout.connect(combo_reset)
 		2:
 			playerSprite.play("attack_c")
-			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.45,0.5)})
+			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.45,0.5)})
+			else: block_attack_sfx = false
 			await playerSprite.frame_changed
 			atk_combo_buffer = false
 			atk_finisher.emit()
@@ -553,7 +564,8 @@ func play_attack_animation():
 			#atk_combo_timer.timeout.connect(combo_reset)
 		_:
 			playerSprite.play("attack")
-			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.9,1.2)})
+			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.9,1.2)})
+			else: block_attack_sfx = false
 			await playerSprite.animation_finished
 			atk_combo_timer = get_tree().create_timer(atk_combo_lapse)
 			atk_combo_timer.timeout.connect(combo_reset)

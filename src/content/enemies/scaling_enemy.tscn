@@ -1,61 +1,61 @@
-[gd_scene format=3 uid="uid://obibigkx4gtt"]
+[gd_scene format=3 uid="uid://bl6t103brt3yi"]
 
-[ext_resource type="Script" uid="uid://bvx2y3oncjcsd" path="res://src/schema/enemy_controller.gd" id="1_lbkcg"]
-[ext_resource type="Shader" uid="uid://cbyre71vouwqn" path="res://assets/shaders/actorShader2D.gdshader" id="2_yryss"]
-[ext_resource type="Texture2D" uid="uid://cxug6tjhq7bt5" path="res://assets/artwork/enemy_sprites-01.png" id="3_ttha8"]
-[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/schema/hitbox.gd" id="4_xsy4n"]
-[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/schema/hurtbox.gd" id="5_cfrbt"]
+[ext_resource type="Script" uid="uid://bvx2y3oncjcsd" path="res://src/schema/enemy_controller.gd" id="1_ilp1a"]
+[ext_resource type="Shader" uid="uid://cbyre71vouwqn" path="res://assets/shaders/actorShader2D.gdshader" id="2_hyuov"]
+[ext_resource type="Texture2D" uid="uid://cxug6tjhq7bt5" path="res://assets/artwork/enemy_sprites-01.png" id="3_4fmtu"]
+[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/schema/hitbox.gd" id="4_y2a4l"]
+[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/schema/hurtbox.gd" id="5_wry5x"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_r8srb"]
 resource_local_to_scene = true
-shader = ExtResource("2_yryss")
+shader = ExtResource("2_hyuov")
 shader_parameter/hit = false
 shader_parameter/hit_thresh = 0.2
 shader_parameter/hit_step = 0.2
 shader_parameter/hit_speed = 104.0
 shader_parameter/soft_flash = false
 shader_parameter/s_flash_speed = 2.0
-shader_parameter/do_bounce = true
+shader_parameter/do_bounce = false
 shader_parameter/do_abs = false
 shader_parameter/do_quantize = true
 shader_parameter/quantize_to = 1.0
 shader_parameter/sine_amplitude = Vector2(1, 3)
 shader_parameter/sine_speed = Vector2(1, 2.5)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_lbkcg"]
-atlas = ExtResource("3_ttha8")
-region = Rect2(0, 128, 16, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_ilp1a"]
+atlas = ExtResource("3_4fmtu")
+region = Rect2(0, 144, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_yryss"]
-atlas = ExtResource("3_ttha8")
-region = Rect2(0, 80, 16, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_hyuov"]
+atlas = ExtResource("3_4fmtu")
+region = Rect2(0, 96, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_ttha8"]
-atlas = ExtResource("3_ttha8")
-region = Rect2(16, 80, 16, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_4fmtu"]
+atlas = ExtResource("3_4fmtu")
+region = Rect2(16, 96, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_xsy4n"]
-atlas = ExtResource("3_ttha8")
-region = Rect2(32, 80, 16, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_y2a4l"]
+atlas = ExtResource("3_4fmtu")
+region = Rect2(32, 96, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_cfrbt"]
-atlas = ExtResource("3_ttha8")
-region = Rect2(48, 80, 16, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_wry5x"]
+atlas = ExtResource("3_4fmtu")
+region = Rect2(48, 96, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_jc4ra"]
-atlas = ExtResource("3_ttha8")
-region = Rect2(64, 80, 16, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_sx20f"]
+atlas = ExtResource("3_4fmtu")
+region = Rect2(64, 96, 16, 16)
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_qg8xp"]
-atlas = ExtResource("3_ttha8")
-region = Rect2(80, 80, 16, 16)
+[sub_resource type="AtlasTexture" id="AtlasTexture_sgtvw"]
+atlas = ExtResource("3_4fmtu")
+region = Rect2(80, 96, 16, 16)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_l06g0"]
 resource_local_to_scene = true
 animations = [{
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_lbkcg")
+"texture": SubResource("AtlasTexture_ilp1a")
 }],
 "loop": 0,
 "name": &"hurt",
@@ -63,22 +63,22 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_yryss")
+"texture": SubResource("AtlasTexture_hyuov")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_ttha8")
+"texture": SubResource("AtlasTexture_4fmtu")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_xsy4n")
+"texture": SubResource("AtlasTexture_y2a4l")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_cfrbt")
+"texture": SubResource("AtlasTexture_wry5x")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_jc4ra")
+"texture": SubResource("AtlasTexture_sx20f")
 }, {
 "duration": 1.0,
-"texture": SubResource("AtlasTexture_qg8xp")
+"texture": SubResource("AtlasTexture_sgtvw")
 }],
 "loop": 1,
 "name": &"idle",
@@ -94,22 +94,21 @@ size = Vector2(12, 12)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_r8srb"]
 size = Vector2(2, 2)
 
-[node name="BookEnemy" type="CharacterBody2D" unique_id=1668887543]
+[node name="ScalingEnemy" type="CharacterBody2D" unique_id=1668887543]
 collision_layer = 8
 collision_mask = 2
-script = ExtResource("1_lbkcg")
-enemy_movement = 2
-is_flying = true
-max_health = 2
+script = ExtResource("1_ilp1a")
+enemy_movement = 1
+max_health = 3
+bonus_health = 1
 scale_with_player = true
+scale_mod = 1.5
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1206461016]
 material = SubResource("ShaderMaterial_r8srb")
 position = Vector2(0, 4)
 sprite_frames = SubResource("SpriteFrames_l06g0")
 animation = &"idle"
-frame = 5
-frame_progress = 0.3523547
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=2096347317]
 show_behind_parent = true
@@ -120,7 +119,7 @@ debug_color = Color(1, 0.6, 0.69803923, 0.41960785)
 show_behind_parent = true
 collision_layer = 32
 collision_mask = 64
-script = ExtResource("4_xsy4n")
+script = ExtResource("4_y2a4l")
 box_tag = 2
 metadata/_custom_type_script = "uid://bxtuhccjq3t53"
 
@@ -132,7 +131,7 @@ debug_color = Color(1, 0, 0, 0.41960785)
 show_behind_parent = true
 collision_layer = 64
 collision_mask = 32
-script = ExtResource("5_cfrbt")
+script = ExtResource("5_wry5x")
 ignore_box_tags = Array[int]([2, 0])
 metadata/_custom_type_script = "uid://bmr2kt3egosib"
 

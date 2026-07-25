@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://b4tbgjvea10jj"]
+
+[ext_resource type="Script" uid="uid://chtf2r17bfv22" path="res://src/schema/enemy_spawner.gd" id="1_43umn"]
+[ext_resource type="Texture2D" uid="uid://d3gg4gdb8x7qw" path="res://assets/artwork/some_ui.png" id="2_n27sx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l06g0"]
+size = Vector2(16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ebymd"]
+resource_local_to_scene = true
+atlas = ExtResource("2_n27sx")
+region = Rect2(32, 48, 16, 16)
+
+[node name="EnemySpawner" type="Node2D" unique_id=365880280]
+script = ExtResource("1_43umn")
+
+[node name="Check" type="ShapeCast2D" parent="." unique_id=543966738]
+shape = SubResource("RectangleShape2D_l06g0")
+target_position = Vector2(0, 0)
+max_results = 1
+collision_mask = 110
+collide_with_areas = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1791793985]
+texture = SubResource("AtlasTexture_ebymd")

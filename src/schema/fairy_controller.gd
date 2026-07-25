@@ -6,6 +6,7 @@ extends CharacterBody2D
 
 @onready var as2d : AnimatedSprite2D = $AnimatedSprite2D
 @onready var fairy_detect : Hurtbox2D = $FairyDetect
+@export var stop_healing := false
 
 enum s {
 	FOLLOW,
@@ -20,10 +21,19 @@ var current_state : s = s.FOLLOW :
 
 func _ready():
 	as2d.play("fly")
+	Dungeon.end_dialog.connect(on_dialog_end)
+	Dungeon.play_dialog.connect(on_dialog)
 	fairy_detect.detected.connect(on_detect)
 	if !player:
 		await get_tree().process_frame
 		player = get_tree().get_first_node_in_group("player")
+
+func on_dialog(_txt : String = "", _nme : String = "???",_important := false):
+	stop_healing = true
+
+func on_dialog_end():
+	stop_healing = false
+	heal_cooldown = get_tree().create_timer(3.0)
 
 var restore_mod := 1.0
 func on_detect(state: bool,t : Hitbox2D.tags):
@@ -72,6 +82,10 @@ var heal_cooldown : SceneTreeTimer
 @onready var heal_shockwave = $FairyHeal/HealShockwave
 func heal(delta : float):
 	if !player: return
+	if stop_healing: 
+		Dungeon.fairy_countdown.emit(-1)
+		htime = 0.0
+		return
 	if heal_cooldown: 
 		if heal_cooldown.time_left == 0.0: heal_cooldown = null
 		return
@@ -104,7 +118,9 @@ func heal(delta : float):
 				pass
 			else: 
 				#heal
-				player.health += 1
+				if player.health == 0:
+					player.health = 3
+				else: player.health += 1
 				current_state = s.FOLLOW
 				Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_HEAL],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2)})
 				Dungeon.spawn_ft(player.global_position,str("[wave][color=639bff]+hp"),1.5)

@@ -4,13 +4,21 @@ extends Node
 static var AM : AudioManager
 
 signal fairy_countdown(time_left : int)
+signal set_cam_lim(lim : float,type : CameraLimit.t)
+signal play_dialog(txt : String, nme : String,important : bool)
+signal dialog_waiting()
+signal end_dialog()
+signal move_player(pos : Vector2, look : Vector2) # default inf
+signal move_camera(t : ScriptLine.camera_tags,s : bool) #default to false
+signal reset_camera() #all non player camera set priority to 0
+
 var accumulated_exp : int = 0
 
 func _ready():
 	var newam := AudioManager.new()
 	add_child(newam)
 	AM = newam
-	AM.play_music(await Symphony.get_music(Symphony.BGM.GRAVEYARD))
+	AM.play_music(await Symphony.get_music(Symphony.BGM.LEVEL))
 	#print("Total to max level: ",get_total_exp())
 
 func add_exp(gexp : int): accumulated_exp += gexp
@@ -28,6 +36,13 @@ func get_level() -> int:
 
 func get_needed(lvl : int) -> int: return int(ceilf(xpa * (pow(xpb,float(lvl))) + xpc))
 
+func get_unused(lvl : int,earned : int) -> int:
+	var total := accumulated_exp + earned
+	for l in lvl:
+		total -= get_needed(l)
+	return total
+	
+
 func get_total_exp() -> int:
 	var total_exp : int = 0
 	for lvl in 11: total_exp += get_needed(lvl)
@@ -40,6 +55,62 @@ func spawn_ft(pos : Vector2, txt : String, hold := 3.0):
 	add_child(new)
 	new.global_position = pos
 	new.set_ft(txt)
+
+func anykey(timeout := -1.0):
+	var t : SceneTreeTimer
+	if timeout > 0.0: t = get_tree().create_timer(timeout)
+	while true:
+		await frame_delay()
+		if Input.is_anything_pressed(): 
+			return true
+		if t and t.time_left == 0.0: 
+			t = null
+			break
+	return false
+
+func delayRelease(action : StringName = "confirm", buffer : float = 0.125) -> void:
+	#Input.is_anything_pressed() ??
+	if Input.is_action_pressed(action):
+		for i in 10000:
+			if !Input.is_action_pressed(action):
+				break
+			await frame_delay()
+	await time_delay(buffer)
+	return
+
+func multiDelayRelease(actions : Array[StringName] = ["confirm"], buffer : float = 0.125) -> void:
+	for a in actions: if Input.is_action_pressed(a):
+		for i in 10000:
+			if !Input.is_action_pressed(a):
+				break
+			await frame_delay()
+		break
+	await time_delay(buffer)
+	return
+
+#multi input version takes an array of inputs?
+func inputDelay(action : StringName = "confirm") -> bool:
+	await time_delay(0.125)
+	#show UI requesting player input (moving arrow)
+	var input = false
+	while !input:
+		await frame_delay()
+		if Input.is_action_just_pressed(action):
+			input = true
+			break
+	return input
+
+func multiInputDelay(actions : Array[StringName] = ["confirm"]) -> bool:
+	await time_delay(0.125)
+	#show UI requesting player input (moving arrow)
+	var input = false
+	while !input:
+		await frame_delay()
+		for action in actions:
+			if Input.is_action_just_pressed(action):
+				input = true
+				break
+	return input
 
 func time_delay(t : float, process_always : bool = true,process_in_physics : bool = false,ignore_time_scale : bool = false):
 	await get_tree().create_timer(t,process_always,process_in_physics,ignore_time_scale).timeout

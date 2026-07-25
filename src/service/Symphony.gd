@@ -5,12 +5,16 @@ class_name Symphony
 
 enum BGM {
 	NONE,
-	GRAVEYARD
+	GRAVEYARD,
+	TITLE,
+	LEVEL,
 }
 
 const BGM_p : Dictionary[BGM,String] = {
 	BGM.NONE:"",
-	BGM.GRAVEYARD:"uid://cmkhwa3roivnw"
+	BGM.GRAVEYARD:"uid://cmkhwa3roivnw",
+	BGM.TITLE:"uid://dqgi4hweps6fg",
+	BGM.LEVEL:"uid://lmnsv8v1o0ul"
 }
 
 enum SFX {

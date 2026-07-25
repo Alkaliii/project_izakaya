@@ -26,6 +26,7 @@ func _animation_check() -> void:
 			#parent.playerSprite.offset.x = -8.0 if parent.playerSprite.flip_h else 8.0
 		else:
 			parent.play_animation("jump_attack")
+			if !parent.block_attack_sfx: parent.block_attack_sfx = true
 
 ## Special gravity function. Apply any needed changes to the gravity here. parent.appliedValues.gravity and parent.appliedValues.terminalVelocity changes go here.
 func _gravity() -> void:
@@ -46,7 +47,8 @@ func _movement_check() -> void:
 			if parent.is_on_floor() and parent.velocity.y >= 0.0: await parent.play_attack_animation()
 			else:
 				Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2)}) 
-				await parent.playerSprite.animation_finished
+				#await parent.playerSprite.animation_finished #or parent.landing_occured
+				await parent.landing_occured
 			parent.attack.emit(false)
 			_set_special_flag("attacking", false)
 		elif !parent.atk_combo_buffer:

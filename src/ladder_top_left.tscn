@@ -1,16 +1,16 @@
-[gd_scene format=3 uid="uid://cj08p1skiw01r"]
+[gd_scene format=3 uid="uid://cks2u17fj1wcn"]
 
-[ext_resource type="Texture2D" uid="uid://vj4tken5mq0t" path="res://assets/artwork/small-tiles-01.png" id="1_6iy76"]
-[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/schema/hitbox.gd" id="2_1cjb1"]
+[ext_resource type="Texture2D" uid="uid://vj4tken5mq0t" path="res://assets/artwork/small-tiles-01.png" id="1_syobu"]
+[ext_resource type="Script" uid="uid://bxtuhccjq3t53" path="res://src/schema/hitbox.gd" id="2_8ax2k"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_l06g0"]
-atlas = ExtResource("1_6iy76")
-region = Rect2(208, 128, 16, 16)
+atlas = ExtResource("1_syobu")
+region = Rect2(192, 128, 16, 16)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_l06g0"]
 size = Vector2(16, 8)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_6iy76"]
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_8ax2k"]
 size = Vector2(16, 16)
 
 [node name="Ladder" type="Node2D" unique_id=1136614795]
@@ -27,12 +27,12 @@ collision_mask = 14
 shape = SubResource("RectangleShape2D_l06g0")
 one_way_collision = true
 
-[node name="DropDown" type="Area2D" parent="." unique_id=437009565]
+[node name="DropDown" type="Area2D" parent="." unique_id=834298812]
 collision_layer = 32
 collision_mask = 64
-script = ExtResource("2_1cjb1")
+script = ExtResource("2_8ax2k")
 box_tag = 5
 metadata/_custom_type_script = "uid://bxtuhccjq3t53"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="DropDown" unique_id=1780104880]
-shape = SubResource("RectangleShape2D_6iy76")
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DropDown" unique_id=615008937]
+shape = SubResource("RectangleShape2D_8ax2k")

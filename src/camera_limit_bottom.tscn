@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://b02eek462dler"]
+
+[ext_resource type="Script" uid="uid://b1xg1qi4to654" path="res://src/schema/camera_limit.gd" id="1_yb051"]
+[ext_resource type="Texture2D" uid="uid://d3gg4gdb8x7qw" path="res://assets/artwork/some_ui.png" id="2_speh6"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dko5p"]
+atlas = ExtResource("2_speh6")
+region = Rect2(96, 40, 8, 8)
+
+[node name="CameraLimitBottom" type="Node2D" unique_id=752770023]
+script = ExtResource("1_yb051")
+type = 2
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1696449966]
+texture = SubResource("AtlasTexture_dko5p")
