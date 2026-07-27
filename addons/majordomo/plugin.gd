@@ -14,6 +14,3 @@ func _exit_tree() -> void:
 	remove_tool_menu_item("Deploy to Itch.io")
 	remove_control_from_docks(dock)
 	dock.queue_free()
-
-
-

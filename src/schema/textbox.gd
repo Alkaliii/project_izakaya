@@ -9,6 +9,10 @@ class_name TextBox2D
 @onready var mc = $vbc/tbx/mc
 
 
+func _ready():
+	offset_transform_scale = Vector2.ZERO
+	hide()
+
 func disp_text(txt : String, nme : String = "???",important := false):
 	await _set_text(txt,nme,important)
 	_show_text(true)
@@ -39,6 +43,7 @@ func _show_text(s : bool) -> void:
 	ttw = create_tween()
 	match s:
 		true: 
+			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.MENU_SEL],&"SFX")
 			ttw.tween_property(tbxlbl,"visible_ratio",1.0,0.25).set_ease(Tween.EASE_IN_OUT)
 			ttw.tween_callback(ci.show)
 			ttw.tween_callback(func(): Dungeon.dialog_waiting.emit())
@@ -56,6 +61,7 @@ func _show_box(s : bool) -> void:
 			bxtw.tween_callback(show)
 			bxtw.tween_property(self,"offset_transform_scale",Vector2.ONE,0.25).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUAD)
 		false:
+			Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.MENU_BACK],&"SFX")
 			bxtw.tween_property(self,"offset_transform_scale",Vector2.ZERO,0.25).set_ease(Tween.EASE_IN_OUT).set_trans(Tween.TRANS_QUAD)
 			bxtw.tween_callback(hide)
 	await bxtw.finished

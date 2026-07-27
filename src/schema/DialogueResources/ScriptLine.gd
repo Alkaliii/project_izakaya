@@ -13,3 +13,4 @@ enum camera_tags {
 @export var name : String = "???"
 @export var important : bool = false
 @export var camera : camera_tags = camera_tags.NONE
+@export var boss_anim : String = ""

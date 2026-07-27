@@ -12,6 +12,7 @@ enum tags {
 	LADDER,
 	DROPTHROUGH,
 	PLAYER_PRESENCE,
+	BOSS, #attack specifically
 }
 
 @export var box_tag : tags = tags.GENERIC

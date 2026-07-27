@@ -3,7 +3,9 @@ extends Node
 
 @export var player_controller : PlatformerController2D
 @export var camera : PhantomCamera2D
+@export var cnoise : PhantomCameraNoiseEmitter2D
 @export var attack_box : Hitbox2D
+@export var attack_box_air : Hitbox2D
 @export var detect_box : Hurtbox2D
 @export var airburst_parent : Node2D
 @export var airburst_left : CPUParticles2D
@@ -18,6 +20,9 @@ extends Node
 @export var exp_bar : MainHealthBar
 @export var fry_cnt_dwn : RichTextLabel
 @export var hurt_emp : ColorRect
+@export var big_title : RichTextLabel
+@export var level_label : RichTextLabel
+@export var drac_timer : RichTextLabel
 
 @export_group("Debug")
 @export var debug_speed : RichTextLabel
@@ -26,6 +31,9 @@ extends Node
 
 func _ready():
 	player_controller.level = Dungeon.get_level()
+	level_label.text = str("L",player_controller.level)
+	drac_timer.text = ""
+	
 	player_controller.add_to_group("player")
 	player_controller.attack.connect(on_attack)
 	player_controller.jump_performed.connect(on_jump)
@@ -37,17 +45,31 @@ func _ready():
 	Dungeon.play_dialog.connect(on_dialog)
 	Dungeon.end_dialog.connect(end_dialog)
 	Dungeon.move_player.connect(move_to)
+	Dungeon.area_entered.connect(on_area_entered)
+	Dungeon.stun_player.connect(stun)
+	Dungeon.dtime.connect(on_dtime)
 	await get_tree().process_frame
 	set_up_exp()
 	player_controller.exp_changed.connect(set_up_exp)
 
+func on_dtime(t : String):
+	drac_timer.text = t
+
+var old_bottom_lim : int
+var limittw : Tween
 func on_dialog(txt : String, nme : String = "???",important := false):
-	if is_processing(): stop_player(true)
+	if is_processing(): 
+		old_bottom_lim = camera.limit_bottom
+		if limittw: limittw.kill()
+		limittw = create_tween()
+		limittw.tween_property(camera,"limit_bottom",int(player_controller.global_position.y) + 32,0.5).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_QUAD)
+		stop_player(true)
 	text_box.disp_text(txt,nme,important)
 
 func end_dialog(): 
 	text_box.stop_text()
 	stop_player(false)
+	camera.limit_bottom = old_bottom_lim
 
 func stop_player(s : bool):
 	# don't ask
@@ -65,14 +87,40 @@ func move_to(pos : Vector2,look : Vector2 = Vector2.INF):
 	if mtw: mtw.kill()
 	mtw = create_tween()
 	mtw.tween_property(player_controller,"global_position",pos,0.25).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	#mtw.parallel().tween_property(player_controller.playerSprite,"position:y",-2.0,0.125).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_BACK)
+	mtw.parallel().tween_callback(func():
+		player_controller.specialMovements[0]._set_special_flag("force_move",true,["jumpAnimation","moveAnimation"])
+		player_controller.play_animation("hop")
+	)
+	#mtw.tween_property(player_controller.playerSprite,"position:y",4.0,0.05).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CIRC)
+	#mtw.parallel().tween_await(player_controller.playerSprite.animation_finished)
 	mtw.tween_callback(func():
 		if look != Vector2.INF:
 			player_controller.playerSprite.flip_h = player_controller.global_position.x > look.x
+		#await player_controller.playerSprite.animation_finished
+		player_controller.specialMovements[0]._set_special_flag("force_move",false)
+		player_controller.play_animation("idle")
 	)
+
+func stun(dir := false):
+	if player_controller.playerSprite.animation != "walk": return
+	player_controller.stunned = true
+	player_controller.playerSprite.flip_h = dir
+	if dir: Dungeon.pulse("move_right")
+	else: Dungeon.pulse("move_left")
+	player_controller.do_knock = true
+	player_controller._knockback()
+	player_controller.play_animation("hurt")
+	Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2),AudioStreamArtist.prp.VOLUME:0.25})
+	player_controller.playerSprite.material.set_shader_parameter("hit",true)
+	await get_tree().create_timer(0.25).timeout
+	player_controller.playerSprite.material.set_shader_parameter("hit",false)
+	player_controller.stunned = false
+	player_controller.play_animation("idle")
 
 var invulnerable_timer : SceneTreeTimer
 func on_detect(s : bool,tag : Hitbox2D.tags):
-	if tag == Hitbox2D.tags.ENEMY and s and !player_controller.disabled and !player_controller.stunned:
+	if tag in [Hitbox2D.tags.ENEMY,Hitbox2D.tags.BOSS] and s and !player_controller.disabled and !player_controller.stunned:
 		if invulnerable_timer:
 			if invulnerable_timer.time_left == 0.0: invulnerable_timer = null
 			else: return
@@ -83,8 +131,15 @@ func on_detect(s : bool,tag : Hitbox2D.tags):
 		player_controller._knockback()
 		do_hurt_emp()
 		player_controller.play_animation("hurt")
-		player_controller.health -= 1
-		player_controller.exp -= int(roundf(float(player_controller.exp) * 0.33))
+		Dungeon.hitstop()
+		cnoise.emit()
+		if player_controller.health == 1 and Dungeon.no_death_ply: pass
+		else: player_controller.health -= 1
+		if tag == Hitbox2D.tags.ENEMY:
+			player_controller.exp -= int(roundf(float(player_controller.exp) * 0.33))
+		elif tag == Hitbox2D.tags.BOSS:
+			player_controller.exp -= int(roundf(float(player_controller.exp) * 0.66))
+		Dungeon.play_hit(player_controller.global_position,1)
 		Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.8,1.2)})
 		player_controller.playerSprite.material.set_shader_parameter("hit",true)
 		await get_tree().create_timer(0.25).timeout
@@ -121,7 +176,11 @@ var fctw : Tween
 func on_fairy_countdown(nc : int):
 	if nc == cfcd: return
 	cfcd = nc
-	if cfcd != -1:
+	var boss_vis := false
+	var boss := get_tree().get_first_node_in_group("boss")
+	if boss: boss_vis = boss.is_boss_visible()
+	
+	if cfcd != -1 and !boss_vis:
 		fry_cnt_dwn.show()
 		if fctw: fctw.kill()
 		fctw = create_tween()
@@ -143,12 +202,14 @@ var airborne := false
 var disable_collision_for_drop := false
 func _process(delta : float):
 	var on_floor := player_controller.is_on_floor()
-	if !on_floor and player_controller.velocity.y > 1.0: 
-		camera.dead_zone_height = lerpf(camera.dead_zone_height,0.0,2.0 * delta)
-		camera.lookahead_time.y = 0.1
+	if !on_floor and player_controller.velocity.y > 50.0: 
+		camera.follow_offset.y = lerpf(camera.follow_offset.y,64,1.0 * delta)
+		##camera.dead_zone_height = lerpf(camera.dead_zone_height,0.0,2.0 * delta)
+		#camera.lookahead_time.y = 0.5
 	else: 
-		camera.dead_zone_height = lerpf(camera.dead_zone_height,0.5,1.0 * delta)
-		camera.lookahead_time.y = 0.0
+		camera.follow_offset.y = lerpf(camera.follow_offset.y,-16,1.0 * delta)
+		##camera.dead_zone_height = lerpf(camera.dead_zone_height,0.5,1.0 * delta)
+		#camera.lookahead_time.y = 0.0
 	
 	if !on_floor and !airborne: airborne = true
 	if on_floor and airborne:
@@ -166,6 +227,8 @@ func _process(delta : float):
 		if Input.is_action_pressed("move_up") or (Input.is_action_pressed("jump") and !on_floor): attack_box.position.y = -8.0
 		elif !on_floor: attack_box.position.y = 8.0
 		else: attack_box.position.y = 0
+	if attack_box_air:
+		attack_box_air.position.x = -8.0 if player_controller.playerSprite.flip_h else 8.0
 	
 	# Clip Prevention
 	if acl.is_colliding() or acr.is_colliding():
@@ -189,7 +252,7 @@ func _process(delta : float):
 	if Input.is_action_just_pressed("move_up") and !interaction_areas.is_empty():
 		interaction_areas[0].activate()
 	
-	debug_control()
+	#debug_control()
 	health_bar_management()
 
 func set_up_exp():
@@ -202,6 +265,7 @@ func health_bar_management():
 	if player_controller.health == 0 and !player_controller.disabled:
 		player_controller.disabled = true
 		player_controller.play_animation("kneel_over")
+		Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.PLAYER_DEFEAT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.9,1.2)})
 	elif player_controller.health != 0 and player_controller.disabled:
 		invulnerable_timer = get_tree().create_timer(0.5)
 		player_controller.playerSprite.material.set_shader_parameter("soft_flash",true)
@@ -231,7 +295,7 @@ func debug_control():
 					["Ali","Mage","Sign","Sky","Nick"].pick_random(),[true,false].pick_random()
 				)
 			false: text_box.stop_text()
-	if Input.is_action_just_pressed("debug_c"): pass
+	if Input.is_action_just_pressed("debug_c"): Dungeon._ls_anim(!Dungeon.lss)
 
 var hurttw : Tween
 func do_hurt_emp():
@@ -259,6 +323,10 @@ func on_attack(state : bool):
 	for bx in attack_box.get_children():
 		if bx is CollisionPolygon2D: bx.set_deferred("disabled",!state)
 		elif bx is CollisionShape2D: bx.set_deferred("disabled",!state)
+	if !state or airborne:
+		for bx in attack_box_air.get_children():
+			if bx is CollisionPolygon2D: bx.set_deferred("disabled",!state)
+			elif bx is CollisionShape2D: bx.set_deferred("disabled",!state)
 
 func on_camera_lim(limit : float, type : CameraLimit.t):
 	match type:
@@ -266,6 +334,13 @@ func on_camera_lim(limit : float, type : CameraLimit.t):
 		CameraLimit.t.RIGHT: camera.limit_right = int(limit)
 		CameraLimit.t.BOTTOM: camera.limit_bottom = int(limit)
 
+var atw : Tween
+func on_area_entered():
+	big_title.text = str("[wave]",Dungeon.area_name)
+	if atw: atw.kill()
+	atw = create_tween()
+	atw.tween_property(big_title.material,"shader_parameter/progress",1.0,3.0).set_ease(Tween.EASE_IN_OUT)
+	atw.tween_property(big_title.material,"shader_parameter/progress",0.0,1.0).set_ease(Tween.EASE_IN_OUT).set_delay(1.0)
 
 
 

@@ -21,6 +21,7 @@ var current_state : s = s.FOLLOW :
 
 func _ready():
 	as2d.play("fly")
+	heal_cooldown = get_tree().create_timer(4.0)
 	Dungeon.end_dialog.connect(on_dialog_end)
 	Dungeon.play_dialog.connect(on_dialog)
 	fairy_detect.detected.connect(on_detect)
@@ -37,8 +38,9 @@ func on_dialog_end():
 
 var restore_mod := 1.0
 func on_detect(state: bool,t : Hitbox2D.tags):
-	if t == Hitbox2D.tags.PLAYER and state and current_state != s.STUN:
+	if t in [Hitbox2D.tags.PLAYER,Hitbox2D.tags.BOSS] and state and current_state != s.STUN:
 		#print("STUNNED")
+		Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.FAIRY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.9,1.2)})
 		current_state = s.STUN
 		Dungeon.fairy_countdown.emit(-1)
 		htime = 0.0
@@ -82,6 +84,7 @@ var heal_cooldown : SceneTreeTimer
 @onready var heal_shockwave = $FairyHeal/HealShockwave
 func heal(delta : float):
 	if !player: return
+	if Dungeon.no_death_ply: return
 	if stop_healing: 
 		Dungeon.fairy_countdown.emit(-1)
 		htime = 0.0
@@ -112,7 +115,7 @@ func heal(delta : float):
 			)
 			await tw.finished
 			as2d.play("fly")
-			if current_state != s.BUFF or (global_position - player.global_position).length() > follow_dist:
+			if current_state != s.BUFF or ((global_position - player.global_position).length() > follow_dist and player.health != 0):
 				#don't heal
 				if current_state != s.STUN: current_state = s.FOLLOW
 				pass

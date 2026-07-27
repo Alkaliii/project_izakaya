@@ -2,6 +2,9 @@ extends Node
 # I AM THE SINGLETON!
 
 static var AM : AudioManager
+static var HitFx : Array[BasicHitFx] = []
+static var exp_mod := 1.0
+static var prev_lvl : int = -1
 
 signal fairy_countdown(time_left : int)
 signal set_cam_lim(lim : float,type : CameraLimit.t)
@@ -11,14 +14,29 @@ signal end_dialog()
 signal move_player(pos : Vector2, look : Vector2) # default inf
 signal move_camera(t : ScriptLine.camera_tags,s : bool) #default to false
 signal reset_camera() #all non player camera set priority to 0
+signal area_entered()
+signal stun_player(dir : bool)
+signal banim(anim : String)
+signal dtime(time : String)
+signal winner
 
+var no_hit_drac := false
+var no_death_ply := false
+var no_timer := false
 var accumulated_exp : int = 0
+var area_name := "[b]N[/b]eophyte's [b]G[/b]rave"
+const HIT_FX = preload("uid://borx1ws3owosa")
 
 func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	var newam := AudioManager.new()
 	add_child(newam)
 	AM = newam
-	AM.play_music(await Symphony.get_music(Symphony.BGM.LEVEL))
+	#AM.play_music(await Symphony.get_music(Symphony.BGM.LEVEL))
+	for i in 2:
+		var newhfx = HIT_FX.instantiate()
+		add_child(newhfx)
+		HitFx.append(newhfx)
 	#print("Total to max level: ",get_total_exp())
 
 func add_exp(gexp : int): accumulated_exp += gexp
@@ -55,6 +73,31 @@ func spawn_ft(pos : Vector2, txt : String, hold := 3.0):
 	add_child(new)
 	new.global_position = pos
 	new.set_ft(txt)
+
+var hsa := false
+func hitstop():
+	if hsa: return
+	hsa = true
+	Engine.time_scale = 0.01
+	await get_tree().create_timer(0.25,true,false,true).timeout
+	Engine.time_scale = 1.0
+	hsa = false
+
+func play_hit(pos : Vector2,severity : int = 0,flip : bool = false):
+	for i in HitFx:
+		if i.playing: continue
+		else:
+			i.global_position = pos
+			i.restart(severity,flip)
+			return
+	HitFx[0].global_position = pos
+	HitFx[0].restart(severity,flip)
+	return
+
+func pulse(action : StringName):
+	Input.action_press(action)
+	await frame_delay()
+	Input.action_release(action)
 
 func anykey(timeout := -1.0):
 	var t : SceneTreeTimer
@@ -118,15 +161,23 @@ func time_delay(t : float, process_always : bool = true,process_in_physics : boo
 func frame_delay():
 	await get_tree().process_frame
 
+@onready var ls = $CanvasLayer/ls
+var lss : bool
+func _ls_anim(state : bool):
+	lss = state
+	match state:
+		true: await ls.enter()
+		false: await ls.exit()
+
 func _load(file : String, return_loaded_file := false) -> Variant:
 	file = ResourceUID.ensure_path(file)
 	if !file.is_absolute_path(): 
 		printerr("What the fuck is, ",file,"?")
 		return
 	if !return_loaded_file:
-		#await _ls_anim(true)
-		#await time_delay(1.0)
-		pass
+		if lss: return
+		await _ls_anim(true)
+		await time_delay(1.0)
 	var rldr := ResourceLoader
 	rldr.load_threaded_request(file)
 	
@@ -156,9 +207,9 @@ func _load(file : String, return_loaded_file := false) -> Variant:
 		while true:
 			await get_tree().process_frame
 			if get_tree().current_scene and get_tree().current_scene.is_node_ready():
-				#await time_delay(1.0)
-				#await _ls_anim(false)
-				break
+				await time_delay(1.0)
+				await _ls_anim(false)
+				return
 	
 	return load_file
 

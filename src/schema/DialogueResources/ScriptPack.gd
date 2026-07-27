@@ -10,6 +10,7 @@ func play_scp():
 		Dungeon.play_dialog.emit(
 			i.dialog,i.name,i.important
 		)
+		if i.boss_anim: Dungeon.banim.emit(i.boss_anim)
 		if i.camera != ScriptLine.camera_tags.NONE:
 			Dungeon.move_camera.emit(i.camera,true)
 		await Dungeon.dialog_waiting

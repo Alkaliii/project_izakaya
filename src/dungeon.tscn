@@ -1,6 +1,16 @@
 [gd_scene format=3 uid="uid://ck5hvhiapso13"]
 
 [ext_resource type="Script" uid="uid://calk1lsi0m1iw" path="res://src/dungeon.gd" id="1_hnhdy"]
+[ext_resource type="PackedScene" uid="uid://qqcb6q4ei4qg" path="res://src/gui/options.tscn" id="2_2nwdg"]
+[ext_resource type="PackedScene" uid="uid://dylgu4hipplpc" path="res://src/gui/ls.tscn" id="3_e6ewl"]
 
 [node name="Dungeon" type="Node" unique_id=594128276]
 script = ExtResource("1_hnhdy")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1305263116]
+layer = 9
+
+[node name="Options" parent="CanvasLayer" unique_id=943344228 instance=ExtResource("2_2nwdg")]
+
+[node name="ls" parent="CanvasLayer" unique_id=2057950145 instance=ExtResource("3_e6ewl")]
+z_index = 9

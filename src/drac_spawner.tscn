@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://4nwaayycxyl0"]
+
+[ext_resource type="Script" uid="uid://h4y70agicph0" path="res://drac_spawner.gd" id="1_okff6"]
+
+[node name="DracSpawner" type="Node2D" unique_id=953491087]
+script = ExtResource("1_okff6")

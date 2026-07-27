@@ -16,6 +16,7 @@ var music_player_b : AudioStreamArtist
 
 
 func _ready():
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	music_player = AudioStreamArtist.new()
 	add_child(music_player)
 	music_player.bus = &"BGM"

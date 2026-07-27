@@ -33,7 +33,7 @@ var mpaftw : Tween
 func fade_music(t : float,n : float) -> void:
 	#fade to n in time linearly
 	if mpaftw: mpaftw.kill()
-	mpaftw = get_tree().create_tween()
+	mpaftw = self.create_tween()
 	mpaftw.tween_property(self,"volume_linear",n,t)
 	await mpaftw.finished
 

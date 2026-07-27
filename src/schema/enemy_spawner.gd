@@ -65,6 +65,7 @@ func generate():
 	var which = primary
 	if randf() < 0.4 and secondary: which = secondary
 	var new : BaseEnemy2D = which.instantiate()
+	if [true,false,false].pick_random(): new.bonus_health += randi_range(1,3)
 	add_child(new)
 	new.global_position = global_position + spos
 	new.im_dead.connect(clean_spawns.bind(new))

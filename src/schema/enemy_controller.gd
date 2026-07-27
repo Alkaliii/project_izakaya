@@ -5,6 +5,7 @@ enum t {
 	STILL, #this enemy doesn't move
 	CHASE, #this enemy tries to move to the player when the player gets close
 	PATROL, # this enemy moves around a specific patrol point
+	SPECIAL, #override physics process
 }
 
 enum state {
@@ -44,26 +45,33 @@ var current_state : state = state.NONE
 var current_health := 3 :
 	set(nv):
 		current_health = max(nv,0)
+var inital_health := 0
 
 var patrol_point := Vector2.ZERO
 var player : PlatformerController2D
 func _ready():
 	as2d.modulate.a = 0.0
 	patrol_point = global_position
+	new_flight_position = global_position
 	if is_flying: set_flight_position(true)
 	set_flying(is_flying)
 	current_health = max_health + bonus_health
 	if scale_with_player: current_health += int(ceilf(float(Dungeon.get_level()) * scale_mod))
-	set_contact_damage(contact_damage)
+	inital_health = current_health
+	set_contact_damage(false)
 	
 	if damage_detect: damage_detect.detected.connect(on_detect)
 	if as2d.sprite_frames.has_animation("idle"): as2d.play("idle")
+	_after_ready()
 	await get_tree().process_frame
 	player = get_tree().get_first_node_in_group("player")
 	var tw := create_tween()
 	tw.tween_property(as2d,"modulate:a",1.0,0.25).set_ease(Tween.EASE_IN_OUT).set_delay(0.25)
 	await tw.finished
+	set_contact_damage(contact_damage)
 	current_state = state.OKAY
+
+func _after_ready(): pass
 
 func set_contact_damage(s : bool) -> void:
 	if cdbx: for c in cdbx.get_children():
@@ -85,18 +93,30 @@ func set_flying(s : bool) -> void:
 			set_collision_mask_value(1,false)
 
 #const min_detect_dist := 20
+signal got_hit
 func on_detect(s : bool,tag : Hitbox2D.tags):
 	#var player : PlatformerController2D = get_tree().get_first_node_in_group("player")
 	if !player: return
 	if tag == Hitbox2D.tags.PLAYER and s and current_state == state.OKAY:
 		#if player and (global_position - player.global_position).length() > min_detect_dist: return
+		got_hit.emit()
+		if enemy_movement == t.SPECIAL: return
 		current_state = state.STUN
 		set_contact_damage(false)
-		if player: as2d.flip_h = global_position.x > player.global_position.x
 		var dmg = maxi(1,player.level)
-		if player.health > 2: dmg = 0
-		if player.health == 1: dmg = int(roundf(float(dmg) * 1.5))
+		if player: 
+			if player.health > 2: dmg = 0
+			if player.health == 1: dmg = int(roundf(float(dmg) * 1.5))
+			as2d.flip_h = global_position.x > player.global_position.x
+			var sev := 0
+			if dmg >= current_health: sev = 2
+			if dmg == 0: sev = 0
+			Dungeon.play_hit(
+				(global_position + player.global_position) / 2.0,sev,!as2d.flip_h
+			)
 		current_health -= dmg
+		Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.9,1.2)})
+		#if current_health <= 0: Dungeon.hitstop()
 		Dungeon.spawn_ft(global_position,str("[wave]",dmg))
 		
 		do_knock = true
@@ -112,20 +132,22 @@ func on_detect(s : bool,tag : Hitbox2D.tags):
 			set_contact_damage(true)
 			if as2d.sprite_frames.has_animation("idle"): as2d.play("idle")
 			current_state = state.OKAY
-		else:
-			current_state = state.DEAD
-			var earned = max_health + bonus_health
-			if player.health == 1: earned = int(round(float(earned) * 1.5))
-			player.exp += earned
-			Dungeon.spawn_ft(player.global_position,str("[wave][color=639bff]+xp"),1.5)
-			var tw := create_tween()
-			#tw.tween_property(as3d.material,"shader_parameter/dissolve_progress",1.0,0.25).set_ease(Tween.EASE_IN_OUT)
-			tw.tween_property(as2d,"position:y",-12.0,0.25).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
-			tw.parallel().tween_property(as2d,"modulate:a",0.0,0.25).set_ease(Tween.EASE_IN_OUT)
-			tw.tween_callback(func(): im_dead.emit())
-			await tw.finished
-			queue_free()
-			#do something
+		else: kill()
+
+func kill(game := false):
+	current_state = state.DEAD
+	var earned := float(max_health + bonus_health) * Dungeon.exp_mod
+	if player.health == 1: earned = round(float(earned) * 1.5)
+	if !game: 
+		player.exp += int(earned)
+		Dungeon.spawn_ft(player.global_position,str("[wave][color=639bff]+xp"),1.5)
+	var tw := create_tween()
+	#tw.tween_property(as3d.material,"shader_parameter/dissolve_progress",1.0,0.25).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_property(as2d,"position:y",-12.0,0.25).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_EXPO)
+	tw.parallel().tween_property(as2d,"modulate:a",0.0,0.25).set_ease(Tween.EASE_IN_OUT)
+	tw.tween_callback(func(): im_dead.emit())
+	await tw.finished
+	queue_free()
 
 func _physics_process(delta : float):
 	_knockback()
@@ -180,10 +202,10 @@ func set_flight_position(unconditional := false):
 
 func get_follow_pos() -> Vector2:
 	var new_follow_pos : Vector2 = Vector2.ZERO
-	if player.playerSprite.flip_h: new_follow_pos.x = 32.0 #follow_pos.lerp(player.global_position + (Vector2(-1.0,1.0) * -16.0),8.0 * delta)
-	else: new_follow_pos.x = -32.0
-	if player.is_on_floor(): new_follow_pos.y = -24.0
-	else: new_follow_pos.y = 24.0
+	if player.playerSprite.flip_h: new_follow_pos.x = 4.0 #follow_pos.lerp(player.global_position + (Vector2(-1.0,1.0) * -16.0),8.0 * delta)
+	else: new_follow_pos.x = -4.0
+	if player.is_on_floor(): new_follow_pos.y = -2.0
+	else: new_follow_pos.y = 2.0
 	
 	return new_follow_pos
 
@@ -197,7 +219,7 @@ func process_chase(delta : float):
 	if is_flying:
 		if within_range and !chase_cooldown:
 			new_flight_position = player.global_position + get_follow_pos()
-			var fspd := clampf((global_position - new_flight_position).length() / 32.0,0.0,0.5) * movement_speed
+			var fspd := 1.5 * movement_speed
 			global_position = global_position.lerp(new_flight_position,fspd * delta)
 			as2d.flip_h = global_position.x > new_flight_position.x
 		elif still_on_not_chase: pass

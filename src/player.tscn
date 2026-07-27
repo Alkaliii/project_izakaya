@@ -16,10 +16,14 @@
 [ext_resource type="FontFile" uid="uid://3lcefyjbjcf7" path="res://assets/fonts/quaver/quaver.ttf" id="12_nic3v"]
 [ext_resource type="Texture2D" uid="uid://d3gg4gdb8x7qw" path="res://assets/artwork/some_ui.png" id="13_fxwnc"]
 [ext_resource type="Script" uid="uid://g1ds8v4vjb5k" path="res://src/schema/health_bar.gd" id="14_hc2cd"]
+[ext_resource type="Script" uid="uid://bhd4nuiu23e7l" path="res://addons/phantom_camera/scripts/phantom_camera/phantom_camera_noise_emitter_2d.gd" id="14_wwu71"]
+[ext_resource type="Script" uid="uid://dimvdouy8g0sv" path="res://addons/phantom_camera/scripts/resources/phantom_camera_noise_2d.gd" id="15_856a1"]
 [ext_resource type="FontFile" uid="uid://3r64nh6riuee" path="res://assets/fonts/pixel_operator/PixelOperatorHB.ttf" id="15_hc2cd"]
 [ext_resource type="Shader" uid="uid://tv1tn3oyf1e2" path="res://assets/shaders/Speedlines2D.gdshader" id="17_aofjl"]
 [ext_resource type="Script" uid="uid://dnqvk0lbjfptg" path="res://src/schema/textbox.gd" id="18_qntp5"]
 [ext_resource type="Shader" uid="uid://c3epg5t7vexup" path="res://assets/shaders/bounce2D.gdshader" id="19_8wfru"]
+[ext_resource type="FontFile" uid="uid://2ibk1y1n1un" path="res://assets/fonts/OldeTome.ttf" id="20_euala"]
+[ext_resource type="Shader" uid="uid://brxjksosig3bq" path="res://assets/shaders/steppedFade2D.gdshader" id="20_hj5eh"]
 
 [sub_resource type="Resource" id="Resource_bvvr5"]
 script = ExtResource("3_ndfpv")
@@ -316,7 +320,7 @@ shader_parameter/index_shift_randomness = 0
 shader_parameter/custom_index = 0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_tefb0"]
-radius = 8.0
+radius = 7.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_nc72e"]
 resource_local_to_scene = true
@@ -333,6 +337,8 @@ shader_parameter/do_quantize = false
 shader_parameter/quantize_to = 1.0
 shader_parameter/sine_amplitude = Vector2(1, 0)
 shader_parameter/sine_speed = Vector2(1, 0)
+shader_parameter/do_gray_scale = false
+shader_parameter/gsp = 0.0
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dxtnc"]
 atlas = ExtResource("5_nic3v")
@@ -409,6 +415,14 @@ region = Rect2(64, 64, 16, 16)
 [sub_resource type="AtlasTexture" id="AtlasTexture_muppb"]
 atlas = ExtResource("5_nic3v")
 region = Rect2(80, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u6c26"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(0, 224, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5hg2y"]
+atlas = ExtResource("5_nic3v")
+region = Rect2(16, 224, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_wwu71"]
 atlas = ExtResource("5_nic3v")
@@ -595,6 +609,17 @@ animations = [{
 }, {
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_u6c26")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5hg2y")
+}],
+"loop": 0,
+"name": &"hop",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_wwu71")
 }],
 "loop": 0,
@@ -698,6 +723,9 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_wcd5e"]
 size = Vector2(16, 16)
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wwu71"]
+size = Vector2(18, 16)
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8wfru"]
 size = Vector2(8, 8)
 
@@ -706,9 +734,22 @@ size = Vector2(8, 8)
 
 [sub_resource type="Resource" id="Resource_4jusf"]
 script = ExtResource("9_nc72e")
-duration = 0.5
-transition = 10
+transition = 4
 ease = 1
+
+[sub_resource type="Resource" id="Resource_2dr56"]
+script = ExtResource("15_856a1")
+amplitude = 30.0
+frequency = 30.0
+noise_seed = 936
+metadata/_custom_type_script = "uid://dimvdouy8g0sv"
+
+[sub_resource type="Resource" id="Resource_wwu71"]
+script = ExtResource("15_856a1")
+amplitude = 30.0
+frequency = 30.0
+noise_seed = 776
+metadata/_custom_type_script = "uid://dimvdouy8g0sv"
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_8wfru"]
 shader = ExtResource("19_8wfru")
@@ -754,12 +795,12 @@ region = Rect2(40, 64, 8, 16)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_2dr56"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_pdl27"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_evmln"]
 atlas = ExtResource("13_fxwnc")
 region = Rect2(48, 0, 48, 16)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_2dr56"]
-texture = SubResource("AtlasTexture_pdl27")
+texture = SubResource("AtlasTexture_evmln")
 texture_margin_left = 4.0
 texture_margin_top = 4.0
 texture_margin_right = 4.0
@@ -784,16 +825,25 @@ region = Rect2(96, 16, 8, 8)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_l06g0"]
 
-[sub_resource type="AtlasTexture" id="AtlasTexture_u6c26"]
+[sub_resource type="AtlasTexture" id="AtlasTexture_ipv0d"]
 atlas = ExtResource("13_fxwnc")
 region = Rect2(0, 0, 48, 16)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_xmutw"]
-texture = SubResource("AtlasTexture_u6c26")
+texture = SubResource("AtlasTexture_ipv0d")
 texture_margin_left = 4.0
 texture_margin_top = 4.0
 texture_margin_right = 4.0
 texture_margin_bottom = 4.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_euala"]
+shader = ExtResource("20_hj5eh")
+shader_parameter/progress = 0.0
+shader_parameter/fstep = 12.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fe344"]
+atlas = ExtResource("13_fxwnc")
+region = Rect2(16, 48, 16, 16)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_rr2gq"]
 noise_type = 2
@@ -813,7 +863,7 @@ shader_parameter/mask_size = 0.1
 shader_parameter/mask_edge = 0.5
 shader_parameter/animation_speed = 2.0000000475
 
-[node name="Player" type="CharacterBody2D" unique_id=1451421413 node_paths=PackedStringArray("playerSprite", "playerCollider", "player_ui")]
+[node name="Player" type="CharacterBody2D" unique_id=1451421413 node_paths=PackedStringArray("playerSprite", "playerCollider", "player_ui", "noise_em")]
 collision_layer = 4
 collision_mask = 2
 script = ExtResource("1_rclot")
@@ -845,6 +895,7 @@ jumpHeight = 15.0
 descendingGravityFactor = 1.1
 specialMovements = Array[ExtResource("2_hclnh")]([SubResource("Resource_bvvr5"), SubResource("Resource_3n7b0"), SubResource("Resource_l06g0")])
 player_ui = NodePath("PlayerUICanvasLayer")
+noise_em = NodePath("CameraParent/HitNoise")
 inputleft = "move_left"
 inputright = "move_right"
 inputup = "move_up"
@@ -864,11 +915,13 @@ animationslide = "latch"
 animationclimbing = "climbing"
 metadata/_custom_type_script = "uid://r48ickdxd3kr"
 
-[node name="PlayerControllerEx" type="Node" parent="." unique_id=1004097929 node_paths=PackedStringArray("player_controller", "camera", "attack_box", "detect_box", "airburst_parent", "airburst_left", "airburst_right", "pcollide", "acl", "acr", "notice_icon", "text_box", "health_bar", "exp_bar", "fry_cnt_dwn", "hurt_emp", "debug_speed", "debug_anim", "debug_exp")]
+[node name="PlayerControllerEx" type="Node" parent="." unique_id=1004097929 node_paths=PackedStringArray("player_controller", "camera", "cnoise", "attack_box", "attack_box_air", "detect_box", "airburst_parent", "airburst_left", "airburst_right", "pcollide", "acl", "acr", "notice_icon", "text_box", "health_bar", "exp_bar", "fry_cnt_dwn", "hurt_emp", "big_title", "level_label", "drac_timer", "debug_speed", "debug_anim", "debug_exp")]
 script = ExtResource("4_dxtnc")
 player_controller = NodePath("..")
 camera = NodePath("../CameraParent/PhantomCamera2D")
+cnoise = NodePath("../CameraParent/HurtNoise")
 attack_box = NodePath("../PlayerAttack")
+attack_box_air = NodePath("../PlayerAttackAerial")
 detect_box = NodePath("../PlayerDetect")
 airburst_parent = NodePath("../DustParticles")
 airburst_left = NodePath("../DustParticles/AirBurstLeft")
@@ -882,6 +935,9 @@ health_bar = NodePath("../PlayerUICanvasLayer/pUI/mc/bars/HealthBar")
 exp_bar = NodePath("../PlayerUICanvasLayer/pUI/mc/bars/EXPBar")
 fry_cnt_dwn = NodePath("../PlayerUICanvasLayer/pUI/cc/fcd")
 hurt_emp = NodePath("../PlayerUICanvasLayer/pUI/HurtEmphasis")
+big_title = NodePath("../PlayerUICanvasLayer/pUI/mc/AreaName")
+level_label = NodePath("../PlayerUICanvasLayer/pUI/mc/HBoxContainer/alert/Level")
+drac_timer = NodePath("../PlayerUICanvasLayer/pUI/mc/DracTimer")
 debug_speed = NodePath("../PlayerUICanvasLayer/debug/VBoxContainer/speed")
 debug_anim = NodePath("../PlayerUICanvasLayer/debug/VBoxContainer/anim")
 debug_exp = NodePath("../PlayerUICanvasLayer/debug/VBoxContainer/exp")
@@ -933,6 +989,7 @@ scale_amount_curve = SubResource("Curve_dxtnc")
 color_ramp = SubResource("Gradient_nic3v")
 
 [node name="PlayerCollider" type="CollisionShape2D" parent="." unique_id=1482488137]
+position = Vector2(0, 1)
 shape = SubResource("CircleShape2D_tefb0")
 
 [node name="PlayerSprite" type="AnimatedSprite2D" parent="." unique_id=1586342138]
@@ -941,7 +998,6 @@ texture_repeat = 1
 material = SubResource("ShaderMaterial_nc72e")
 position = Vector2(0, 4)
 sprite_frames = SubResource("SpriteFrames_l06g0")
-animation = &"idle"
 centered = false
 offset = Vector2(-8, -8)
 
@@ -955,6 +1011,19 @@ box_tag = 1
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerAttack" unique_id=988161027]
 shape = SubResource("RectangleShape2D_wcd5e")
+disabled = true
+debug_color = Color(1, 0, 0, 0.41960785)
+
+[node name="PlayerAttackAerial" type="Area2D" parent="." unique_id=1688360787]
+show_behind_parent = true
+position = Vector2(0, 8)
+collision_layer = 32
+collision_mask = 64
+script = ExtResource("6_fxwnc")
+box_tag = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerAttackAerial" unique_id=1884064818]
+shape = SubResource("RectangleShape2D_wwu71")
 disabled = true
 debug_color = Color(1, 0, 0, 0.41960785)
 
@@ -993,12 +1062,28 @@ tween_resource = SubResource("Resource_4jusf")
 tween_on_load = false
 follow_offset = Vector2(0, -16)
 follow_damping = true
+follow_damping_value = Vector2(0.125, 0.25)
 lookahead = true
-lookahead_time = Vector2(0.5, 0)
-dead_zone_width = 0.125
+lookahead_time = Vector2(1, 0)
+dead_zone_width = 0.8
 dead_zone_height = 0.5
 draw_limits = true
+noise_emitter_layer = 1
 metadata/_custom_type_script = "uid://bhexx6mj1xv3q"
+
+[node name="HurtNoise" type="Node2D" parent="CameraParent" unique_id=1559909344]
+script = ExtResource("14_wwu71")
+noise = SubResource("Resource_2dr56")
+duration = 0.25
+decay_time = 0.1
+metadata/_custom_type_script = "uid://bhd4nuiu23e7l"
+
+[node name="HitNoise" type="Node2D" parent="CameraParent" unique_id=1486918925]
+script = ExtResource("14_wwu71")
+noise = SubResource("Resource_wwu71")
+duration = 0.125
+decay_time = 0.1
+metadata/_custom_type_script = "uid://bhd4nuiu23e7l"
 
 [node name="InteractionNotice" type="Sprite2D" parent="." unique_id=2143615074]
 visible = false
@@ -1019,8 +1104,10 @@ target_position = Vector2(-12, 0)
 collision_mask = 2
 
 [node name="PlayerUICanvasLayer" type="CanvasLayer" parent="." unique_id=1071017687]
+visible = false
 
 [node name="debug" type="Control" parent="PlayerUICanvasLayer" unique_id=1134714803]
+visible = false
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -1281,6 +1368,75 @@ offset_transform_enabled = true
 offset_transform_position_ratio = Vector2(0.25, 0)
 texture = SubResource("AtlasTexture_undrb")
 stretch_mode = 3
+
+[node name="AreaName" type="RichTextLabel" parent="PlayerUICanvasLayer/pUI/mc" unique_id=496529843]
+material = SubResource("ShaderMaterial_euala")
+clip_contents = false
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_colors/font_shadow_color = Color(0.11372549, 0.15294118, 0.18431373, 1)
+theme_override_constants/shadow_outline_size = 2
+theme_override_fonts/normal_font = ExtResource("12_nic3v")
+theme_override_fonts/bold_font = ExtResource("20_euala")
+theme_override_font_sizes/normal_font_size = 8
+theme_override_font_sizes/bold_font_size = 22
+bbcode_enabled = true
+text = "[wave freq=1][b]N[/b]eophyte's [b]G[/b]rave"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="PlayerUICanvasLayer/pUI/mc" unique_id=10103681]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme_override_constants/separation = -4
+
+[node name="alert" type="TextureRect" parent="PlayerUICanvasLayer/pUI/mc/HBoxContainer" unique_id=739286815]
+custom_minimum_size = Vector2(8, 8)
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 4
+offset_transform_position_ratio = Vector2(0.25, 0)
+texture = SubResource("AtlasTexture_fe344")
+stretch_mode = 3
+
+[node name="Level" type="RichTextLabel" parent="PlayerUICanvasLayer/pUI/mc/HBoxContainer/alert" unique_id=1370312155]
+clip_contents = false
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -8.0
+offset_right = 9.0
+grow_vertical = 0
+size_flags_horizontal = 0
+size_flags_vertical = 8
+theme_override_colors/default_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+theme_override_constants/outline_size = 8
+theme_override_fonts/normal_font = ExtResource("12_nic3v")
+theme_override_font_sizes/normal_font_size = 8
+text = "L6"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
+
+[node name="DracTimer" type="RichTextLabel" parent="PlayerUICanvasLayer/pUI/mc" unique_id=576639943]
+clip_contents = false
+layout_mode = 2
+size_flags_horizontal = 8
+size_flags_vertical = 8
+theme_override_colors/font_shadow_color = Color(0.16862746, 0.16862746, 0.14901961, 1)
+theme_override_constants/shadow_offset_x = 0
+theme_override_fonts/normal_font = ExtResource("12_nic3v")
+theme_override_font_sizes/normal_font_size = 8
+bbcode_enabled = true
+text = "0:00"
+fit_content = true
+scroll_active = false
+autowrap_mode = 0
 
 [node name="HurtEmphasis" type="ColorRect" parent="PlayerUICanvasLayer/pUI" unique_id=324874496]
 material = SubResource("ShaderMaterial_pdl27")

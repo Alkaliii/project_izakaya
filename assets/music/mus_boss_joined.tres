@@ -1,0 +1,14 @@
+[gd_resource type="AudioStreamInteractive" format=3 uid="uid://sbtkl0in74ik"]
+
+[ext_resource type="AudioStream" uid="uid://84wyocnqj1eo" path="res://assets/music/mus_bossintro.ogg" id="1_bf76u"]
+[ext_resource type="AudioStream" uid="uid://cxm5gpo7v2hnm" path="res://assets/music/mus_bossmain.ogg" id="2_to7dw"]
+
+[resource]
+clip_count = 2
+clip_0/name = &"Mus Bossintro"
+clip_0/stream = ExtResource("1_bf76u")
+clip_0/auto_advance = 1
+clip_0/next_clip = 1
+clip_1/name = &"Mus Bossmain"
+clip_1/stream = ExtResource("2_to7dw")
+clip_1/auto_advance = 0

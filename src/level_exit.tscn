@@ -1,0 +1,29 @@
+[gd_scene format=3 uid="uid://b20yf6vmd1jkw"]
+
+[ext_resource type="Script" uid="uid://cl3ee3xietfog" path="res://src/schema/level_entrance.gd" id="1_8tkls"]
+[ext_resource type="Texture2D" uid="uid://vj4tken5mq0t" path="res://assets/artwork/small-tiles-01.png" id="2_qkqob"]
+[ext_resource type="Script" uid="uid://bmr2kt3egosib" path="res://src/schema/hurtbox.gd" id="3_u7d2f"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ofril"]
+atlas = ExtResource("2_qkqob")
+region = Rect2(0, 112, 32, 48)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_l06g0"]
+size = Vector2(20, 48)
+
+[node name="LevelExit" type="Node2D" unique_id=252066392]
+z_index = -1
+script = ExtResource("1_8tkls")
+is_exit = true
+
+[node name="back" type="Sprite2D" parent="." unique_id=606331011]
+texture = SubResource("AtlasTexture_ofril")
+
+[node name="Hurtbox2D" type="Area2D" parent="." unique_id=1722988710]
+collision_layer = 64
+collision_mask = 32
+script = ExtResource("3_u7d2f")
+metadata/_custom_type_script = "uid://bmr2kt3egosib"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hurtbox2D" unique_id=533756988]
+shape = SubResource("RectangleShape2D_l06g0")

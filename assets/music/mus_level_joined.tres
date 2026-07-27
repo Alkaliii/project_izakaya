@@ -1,0 +1,14 @@
+[gd_resource type="AudioStreamInteractive" format=3 uid="uid://b6cenvig34xo2"]
+
+[ext_resource type="AudioStream" uid="uid://d3jyf56ofnpt8" path="res://assets/music/mus_levelintro.ogg" id="1_pvy61"]
+[ext_resource type="AudioStream" uid="uid://lmnsv8v1o0ul" path="res://assets/music/mus_level.ogg" id="2_qrfo0"]
+
+[resource]
+clip_count = 2
+clip_0/name = &"Mus Levelintro"
+clip_0/stream = ExtResource("1_pvy61")
+clip_0/auto_advance = 1
+clip_0/next_clip = 1
+clip_1/name = &"Mus Level"
+clip_1/stream = ExtResource("2_qrfo0")
+clip_1/auto_advance = 0

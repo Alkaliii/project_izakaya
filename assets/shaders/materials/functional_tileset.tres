@@ -5,6 +5,7 @@
 [ext_resource type="PackedScene" uid="uid://obibigkx4gtt" path="res://src/content/enemies/book_enemy.tscn" id="3_jme5f"]
 [ext_resource type="PackedScene" uid="uid://bl6t103brt3yi" path="res://src/content/enemies/scaling_enemy.tscn" id="4_0ihis"]
 [ext_resource type="PackedScene" uid="uid://c1loopket4kp5" path="res://src/ladder.tscn" id="4_7y7ds"]
+[ext_resource type="Texture2D" uid="uid://be3baa2kp1kb3" path="res://assets/artwork/boss_room_tiles.png" id="5_eilai"]
 [ext_resource type="PackedScene" uid="uid://cj08p1skiw01r" path="res://src/ladder_top.tscn" id="5_t0e87"]
 [ext_resource type="PackedScene" uid="uid://cks2u17fj1wcn" path="res://src/ladder_top_left.tscn" id="6_jme5f"]
 [ext_resource type="PackedScene" uid="uid://ccp6nwbjvb5u" path="res://src/ladder_top_right.tscn" id="7_7y7ds"]
@@ -1058,12 +1059,63 @@ texture = ExtResource("1_ijh0a")
 9:12/0 = 0
 5:11/0 = 0
 4:11/0 = 0
+15:12/0 = 0
+15:11/0 = 0
+16:11/0 = 0
+17:11/0 = 0
+17:10/0 = 0
+18:10/0 = 0
+18:11/0 = 0
+18:12/0 = 0
+17:12/0 = 0
+16:12/0 = 0
+16:10/0 = 0
+15:10/0 = 0
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_1a501"]
 resource_name = "Enemies"
 scenes/1/scene = ExtResource("2_6rff5")
 scenes/2/scene = ExtResource("3_jme5f")
 scenes/3/scene = ExtResource("4_0ihis")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wm4al"]
+texture = ExtResource("5_eilai")
+0:0/0 = 0
+0:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:0/0 = 0
+1:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:0/0 = 0
+2:0/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+0:1/0 = 0
+0:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:1/0 = 0
+1:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:1/0 = 0
+2:1/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+3:1/0 = 0
+4:1/0 = 0
+5:1/0 = 0
+6:1/0 = 0
+0:2/0 = 0
+0:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:2/0 = 0
+1:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+2:2/0 = 0
+2:2/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+5:2/0 = 0
+6:2/0 = 0
+0:3/0 = 0
+0:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:3/0 = 0
+1:3/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+0:4/0 = 0
+0:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
+1:4/0 = 0
+1:4/0/physics_layer_0/polygon_0/points = PackedVector2Array(-8, -8, 8, -8, 8, 8, -8, 8)
 
 [sub_resource type="TileSetScenesCollectionSource" id="TileSetScenesCollectionSource_6s8mg"]
 resource_name = "Interactables"
@@ -1096,3 +1148,4 @@ sources/0 = SubResource("TileSetAtlasSource_g7fjq")
 sources/1 = SubResource("TileSetScenesCollectionSource_1a501")
 sources/4 = SubResource("TileSetScenesCollectionSource_0ihis")
 sources/3 = SubResource("TileSetScenesCollectionSource_6s8mg")
+sources/2 = SubResource("TileSetAtlasSource_wm4al")

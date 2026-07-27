@@ -43,7 +43,7 @@ func _movement_check() -> void:
 		_set_special_flag("climbing_ladder",true,["jumpAnimation","moveAnimation","move"])
 		#parent.play_animation("climbing")
 	if parent.commandInputs.up.hold and _get_special_flag("climbing_ladder"):
-		parent.velocity.y = -50
+		parent.velocity.y = -65
 	elif _get_special_flag("climbing_ladder"):
 		parent.velocity.y = 0.0
 	if (parent.commandInputs.down.tap or parent.commandInputs.jump.tap or !_get_special_flag("near_ladder")) and _get_special_flag("climbing_ladder"):

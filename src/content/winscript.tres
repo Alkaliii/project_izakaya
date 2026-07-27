@@ -1,0 +1,41 @@
+[gd_resource type="Resource" script_class="ScriptPack" format=3 uid="uid://brt72bv4kwshd"]
+
+[ext_resource type="Script" uid="uid://0g47havgqxhi" path="res://src/schema/DialogueResources/ScriptLine.gd" id="1_ex35f"]
+[ext_resource type="Script" uid="uid://darfsy5ygt82i" path="res://src/schema/DialogueResources/ScriptPack.gd" id="2_i3n05"]
+
+[sub_resource type="Resource" id="Resource_ty26p"]
+script = ExtResource("1_ex35f")
+dialog = "How!"
+name = "D. Owen"
+boss_anim = "appear"
+metadata/_custom_type_script = "uid://0g47havgqxhi"
+
+[sub_resource type="Resource" id="Resource_gfu8j"]
+script = ExtResource("1_ex35f")
+dialog = "How have you bested me!"
+name = "D. Owen"
+metadata/_custom_type_script = "uid://0g47havgqxhi"
+
+[sub_resource type="Resource" id="Resource_7db4i"]
+script = ExtResource("1_ex35f")
+dialog = "Ugh... I'll be back..."
+name = "D. Owen"
+boss_anim = "disappear3"
+metadata/_custom_type_script = "uid://0g47havgqxhi"
+
+[sub_resource type="Resource" id="Resource_yot7r"]
+script = ExtResource("1_ex35f")
+dialog = "[wave][color=goldenrod]YOU WIN"
+important = true
+metadata/_custom_type_script = "uid://0g47havgqxhi"
+
+[sub_resource type="Resource" id="Resource_dgsgr"]
+script = ExtResource("1_ex35f")
+dialog = "..."
+boss_anim = "gameover"
+metadata/_custom_type_script = "uid://0g47havgqxhi"
+
+[resource]
+script = ExtResource("2_i3n05")
+scp = Array[ExtResource("1_ex35f")]([SubResource("Resource_ty26p"), SubResource("Resource_gfu8j"), SubResource("Resource_7db4i"), SubResource("Resource_yot7r"), SubResource("Resource_dgsgr")])
+metadata/_custom_type_script = "uid://darfsy5ygt82i"

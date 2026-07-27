@@ -1,0 +1,18 @@
+[gd_resource type="ShaderMaterial" format=3 uid="uid://dr2b0puqt213b"]
+
+[ext_resource type="Shader" uid="uid://cbyre71vouwqn" path="res://assets/shaders/actorShader2D.gdshader" id="1_bei0m"]
+
+[resource]
+shader = ExtResource("1_bei0m")
+shader_parameter/hit = true
+shader_parameter/hit_thresh = 0.2
+shader_parameter/hit_step = 1.0
+shader_parameter/hit_speed = 8.0
+shader_parameter/soft_flash = false
+shader_parameter/s_flash_speed = 2.0
+shader_parameter/do_bounce = false
+shader_parameter/do_abs = false
+shader_parameter/do_quantize = false
+shader_parameter/quantize_to = 1.0
+shader_parameter/sine_amplitude = Vector2(1, 0)
+shader_parameter/sine_speed = Vector2(1, 0)

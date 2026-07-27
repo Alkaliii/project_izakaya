@@ -8,35 +8,55 @@ enum BGM {
 	GRAVEYARD,
 	TITLE,
 	LEVEL,
+	BOSS,
+	BOSS_B,
 }
 
 const BGM_p : Dictionary[BGM,String] = {
 	BGM.NONE:"",
 	BGM.GRAVEYARD:"uid://cmkhwa3roivnw",
 	BGM.TITLE:"uid://dqgi4hweps6fg",
-	BGM.LEVEL:"uid://lmnsv8v1o0ul"
+	BGM.LEVEL:"uid://b6cenvig34xo2",
+	BGM.BOSS:"uid://sbtkl0in74ik",
+	BGM.BOSS_B:"uid://cydx1omi2teh0",
 }
 
 enum SFX {
 	NONE,
+	COUNTDOWN,
 	LEVEL_UP,
 	FAIRY_SPELL,
+	FAIRY_HIT,
 	ENEMY_HIT,
 	PLAYER_HIT,
 	PLAYER_HEAL,
 	PLAYER_JUMP,
 	PLAYER_LAND,
+	PLAYER_DEFEAT,
+	ENEMY_ATTACK_A,
+	ENEMY_ATTACK_B,
+	BOSS_APPEAR,
+	MENU_BACK,
+	MENU_SEL,
 }
 
 const SFX_p : Dictionary[SFX,String] = {
 	SFX.NONE:"",
+	SFX.COUNTDOWN:"uid://b7yskpol27psj",
 	SFX.LEVEL_UP:"uid://d071pwi5u3otf",
 	SFX.FAIRY_SPELL:"uid://bxvx07qtw02rp",
+	SFX.FAIRY_HIT:"uid://beabuf51ppusv",
 	SFX.ENEMY_HIT:"uid://cxe56n5liemah",
 	SFX.PLAYER_HIT:"uid://c1wmixry68mu0",
 	SFX.PLAYER_HEAL:"uid://xrapl8rdgl8n",
 	SFX.PLAYER_JUMP:"uid://4cn2f21vme1j",
 	SFX.PLAYER_LAND:"uid://drcs41l7hixns",
+	SFX.PLAYER_DEFEAT:"uid://dgs2osuwqpckx",
+	SFX.ENEMY_ATTACK_A:"uid://cod778lds68gm",
+	SFX.ENEMY_ATTACK_B:"uid://bw5b34vqccj6",
+	SFX.BOSS_APPEAR:"uid://nmikean3kuax",
+	SFX.MENU_BACK:"uid://dqxf38n021pc1",
+	SFX.MENU_SEL:"uid://djinaj3l46pvg",
 }
 
 static func get_music(music : Symphony.BGM) -> AudioStream:

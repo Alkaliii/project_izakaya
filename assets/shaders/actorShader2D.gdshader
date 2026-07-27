@@ -14,6 +14,9 @@ uniform bool do_quantize;
 uniform float quantize_to : hint_range(0, 2, 0.1) = 1;
 uniform vec2 sine_amplitude = vec2(1.0, 0.0);
 uniform vec2 sine_speed = vec2(1.0, 0.0);
+group_uniforms grayscale;
+uniform bool do_gray_scale = false;
+uniform float gsp : hint_range(0.0, 1.0, 0.1) = 0.0;
 //uniform float dissolve_progress : hint_range(0.0, 1.0, 0.001) = 0.0;
 
 // How jagged each band of melting pixels are
@@ -27,7 +30,18 @@ uniform vec2 sine_speed = vec2(1.0, 0.0);
 //}
 
 //uniform sampler2D SCREEN_TEXTURE : hint_screen_texture, filter_nearest;
-
+float grayscale(vec3 rgb, int type) {
+	// average
+	if (type == 1) {
+		return (rgb.r + rgb.g + rgb.b) / 3.0;
+	}
+	// weighted
+	const float rw = 0.299;
+	const float gw = 0.587;
+	const float bw = 0.114;
+	rgb *= vec3(rw,gw,bw);
+	return rgb.r + rgb.g + rgb.b;
+}
 
 void vertex() {
 	if (do_bounce) {
@@ -77,6 +91,9 @@ void fragment() {
 		COL.a *= sin(TIME * s_flash_speed);
 	}
 	
+	if (do_gray_scale) {
+		COL.rgb = mix(COL.rgb,vec3(grayscale(COL.rgb,0)),gsp);
+	}
 	
 	COLOR.rgb = COL.rgb;
 	COLOR.a *= COL.a;

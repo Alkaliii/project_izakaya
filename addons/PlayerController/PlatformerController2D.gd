@@ -79,6 +79,7 @@ var stunned := false
 
 @export_group("Other")
 @export var player_ui : CanvasLayer
+@export var noise_em : PhantomCameraNoiseEmitter2D
 
 ## Applied Values.
 var appliedValues: PlatformerController2DAppliedValues
@@ -225,6 +226,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		if player_ui: player_ui.visible = self == get_tree().current_scene
 		return
+	else: player_ui.show()
 	_setup_keys()
 	_updateData()
 	playerSprite.animation_changed.connect(fix_frame)
@@ -543,7 +545,7 @@ func play_attack_animation():
 	match atk_combo:
 		1:
 			playerSprite.play("attack_b")
-			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.7,0.9)})
+			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.7,0.9),AudioStreamArtist.prp.VOLUME:0.25})
 			else: block_attack_sfx = false
 			await playerSprite.animation_finished
 			if atk_combo_timer: atk_combo_timer.timeout.disconnect(combo_reset)
@@ -551,9 +553,10 @@ func play_attack_animation():
 			atk_combo_timer.timeout.connect(combo_reset)
 		2:
 			playerSprite.play("attack_c")
-			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.45,0.5)})
+			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.45,0.5),AudioStreamArtist.prp.VOLUME:0.25})
 			else: block_attack_sfx = false
 			await playerSprite.frame_changed
+			if noise_em and health != 3: noise_em.emit()
 			atk_combo_buffer = false
 			atk_finisher.emit()
 			do_forwardknock = true
@@ -564,7 +567,7 @@ func play_attack_animation():
 			#atk_combo_timer.timeout.connect(combo_reset)
 		_:
 			playerSprite.play("attack")
-			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.9,1.2)})
+			if !block_attack_sfx: Dungeon.AM.play(Symphony.SFX_p[Symphony.SFX.ENEMY_HIT],&"SFX",{AudioStreamArtist.prp.PITCH_RNG:Vector2(0.9,1.2),AudioStreamArtist.prp.VOLUME:0.25})
 			else: block_attack_sfx = false
 			await playerSprite.animation_finished
 			atk_combo_timer = get_tree().create_timer(atk_combo_lapse)
